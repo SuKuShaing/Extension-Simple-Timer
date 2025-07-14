@@ -1,30 +1,39 @@
 body {
-    min-width: 200px;
-    font-family: Arial, sans-serif;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+	min-width: 300px;
+	font-family: Arial, sans-serif;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
-.timer {
-    display: flex;
-    gap: 10px;
+section {
+	width: 100%;
 }
 
 .time-input {
-    width: 70px;
+	width: 65px;
+}
+
+.active-view {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.timeYBar {
+	width: 180px;
 }
 
 .time-bar {
-    width: 100%;
-    height: 10px;
-    background-color: #ccc;
-    border-radius: 5px;
+	width: 100%;
+	height: 10px;
+	background-color: #ccc;
+	border-radius: 5px;
 }
 .time-bar-fill {
-    width: 0;
-    height: 10px;
-    background-color: #007bff;
-    border-radius: 5px;
+	width: 0;
+	height: 10px;
+	background-color: #007bff;
+	border-radius: 5px;
 }

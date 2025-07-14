@@ -36,13 +36,19 @@ function stopTimer(id) {
 
 function startTimer(id, minutes) {
     stopTimer(id);
-    const endTime = Date.now() + minutes * 60 * 1000;
-    timers[id] = { timer: null, endTime, paused: false, pauseTime: null };
+    const now = Date.now();
+    const totalTime = minutes * 60 * 1000;
+    timers[id] = {
+        timer: setTimeout(() => {
+            notify(id);
+            stopTimer(id);
+        }, totalTime),
+        endTime: now + totalTime,
+        paused: false,
+        pauseTime: null,
+        totalTime: totalTime
+    };
     saveState();
-    timers[id].timer = setTimeout(() => {
-        notify(id);
-        stopTimer(id);
-    }, minutes * 60 * 1000);
 }
 
 function pauseTimer(id) {
@@ -97,7 +103,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (t && t.endTime) {
             timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - Date.now();
             if (timeLeft < 0) timeLeft = 0;
-            total = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - (t.paused && t.pauseTime ? t.pauseTime : Date.now()) + timeLeft;
+            total = t.totalTime || 0;
         }
         sendResponse({
             timeLeft,
@@ -116,7 +122,13 @@ chrome.storage.local.get('timersState', (data) => {
     if (data.timersState) {
         for (let id in data.timersState) {
             let t = data.timersState[id];
-            timers[id] = { timer: null, endTime: t.endTime, paused: t.paused, pauseTime: t.pauseTime };
+            timers[id] = {
+                timer: null,
+                endTime: t.endTime,
+                paused: t.paused,
+                pauseTime: t.pauseTime,
+                totalTime: t.totalTime // restaurar el tiempo total
+            };
             if (timers[id].endTime && !timers[id].paused) {
                 let timeLeft = timers[id].endTime - Date.now();
                 if (timeLeft > 0) {

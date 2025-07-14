@@ -53,18 +53,15 @@ function TimerController(id) {
     this.updateUI = (status) => {
         if ((status.isRunning || status.paused) && status.timeLeft > 0) {
             this.pausedView.style.display = "none";
-            this.activeView.style.display = "block";
+            this.activeView.style.display = "flex";
             this.timerDisplay.textContent = this.formatTime(status.timeLeft);
-            // Guardar el tiempo total al iniciar
+            // Inicializar correctamente el tiempo total
             if (!this.totalTime || status.totalTime > this.totalTime || !status.isRunning) {
-                this.totalTime = status.totalTime || status.timeLeft;
+                this.totalTime = (status.totalTime && status.totalTime > 0) ? status.totalTime : status.timeLeft;
             }
-            // Calcular el porcentaje de la barra
-            let percent = 100;
-            if (this.totalTime && this.totalTime > 0) {
-                percent = Math.max(0, Math.min(100, 100 * (status.timeLeft / this.totalTime)));
-            }
-            this.timeBarFill.style.width = percent + "%";
+            // Evita división por cero
+            let progress = (this.totalTime > 0) ? (status.timeLeft / this.totalTime) * 100 : 100;
+            this.timeBarFill.style.width = `${progress}%`;
             if (status.paused) {
                 this.pauseBtn.style.display = "none";
                 this.resumeBtn.style.display = "inline-block";
