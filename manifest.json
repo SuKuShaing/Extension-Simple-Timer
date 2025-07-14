@@ -12,8 +12,6 @@
         }
     },
     "permissions": [
-        "tabs",
-        "scripting",
         "notifications",
         "storage"
     ],

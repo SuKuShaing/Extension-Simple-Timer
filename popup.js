@@ -1,3 +1,11 @@
+/*
+ * popup.js
+ *
+ * Este archivo implementa la lógica de la interfaz de usuario del popup para la extensión Simple Timer.
+ * Se encarga de crear y gestionar los controles de los temporizadores, enviar comandos al background,
+ * actualizar la UI, y mantener la sincronización con el estado real de los temporizadores.
+ */
+
 const startBtn = document.getElementById("start-btn");
 const pauseBtn = document.getElementById("pause-btn");
 const resumeBtn = document.getElementById("resume-btn");
@@ -10,6 +18,11 @@ const timeBarFill = document.getElementById("time-bar-fill");
 
 let timerInterval = null;
 
+/**
+ * Formatea un tiempo en milisegundos a formato mm:ss.
+ * @param {number} ms - Milisegundos
+ * @returns {string} Tiempo formateado
+ */
 function formatTime(ms) {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -17,6 +30,12 @@ function formatTime(ms) {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Controlador para un temporizador individual en el popup.
+ * Se encarga de enlazar los controles de UI con el temporizador correspondiente,
+ * enviar mensajes al background y actualizar la interfaz.
+ * @param {number} id - ID del temporizador (1 a 5)
+ */
 function TimerController(id) {
     this.id = id;
     this.startBtn = document.getElementById(`start-btn-${id}`);
@@ -43,6 +62,11 @@ function TimerController(id) {
     this.totalTime = null;
     this.timerInterval = null;
 
+    /**
+     * Formatea un tiempo en milisegundos a formato mm:ss.
+     * @param {number} ms - Milisegundos
+     * @returns {string} Tiempo formateado
+     */
     this.formatTime = function(ms) {
         const totalSeconds = Math.ceil(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
@@ -50,6 +74,11 @@ function TimerController(id) {
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    /**
+     * Actualiza la interfaz de usuario según el estado actual del temporizador.
+     * Muestra/oculta vistas, actualiza el display y la barra de progreso.
+     * @param {Object} status - Estado recibido desde el background
+     */
     this.updateUI = (status) => {
         if ((status.isRunning || status.paused) && status.timeLeft > 0) {
             this.pausedView.style.display = "none";
@@ -78,6 +107,10 @@ function TimerController(id) {
         }
     };
 
+    /**
+     * Consulta periódicamente el estado del temporizador al background
+     * para mantener la UI sincronizada en tiempo real.
+     */
     this.pollStatus = () => {
         chrome.runtime.sendMessage({ action: "get_timer_status", id: this.id }, (status) => {
             this.updateUI(status);
@@ -123,7 +156,10 @@ function TimerController(id) {
     this.pollStatus();
 }
 
-// Instanciar los 5 temporizadores
+/**
+ * Al cargar el DOM, instancia los controladores de los 5 temporizadores
+ * para inicializar la interfaz y enlazar los controles.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);
