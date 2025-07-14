@@ -2,22 +2,47 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>Popup</title>
+		<title>Simple Timer</title>
 		<style>
 			body {
 				min-width: 200px;
 				font-family: Arial, sans-serif;
 				padding: 10px;
 			}
-			button {
-				width: 100%;
-				padding: 5px;
-			}
+            .timer {
+                display: flex;
+                gap: 10px;
+            }
+            .time-bar {
+                width: 100%;
+                height: 10px;
+                background-color: #ccc;
+                border-radius: 5px;
+            }
+            .time-bar-fill {
+                width: 0;
+                height: 10px;
+                background-color: #007bff;
+                border-radius: 5px;
+            }
 		</style>
 	</head>
 	<body>
-		<h4>Hola, mundo</h4>
-		<button id="btn">Haz algo</button>
-		<script src="popup.js"></script>
+        <section class="timer">
+            <div class="paused">
+                <input type="number" placeholder="Time in minutes">
+                <button>Start</button>
+            </div>
+            <div class="active">
+                <!-- time bar that goes backwards -->
+                <div class="time-bar">
+                    <div class="time-bar-fill"></div>
+                </div>
+                <button>Pause</button>
+                <button>Resume</button>
+                <button>Reset</button>
+            </div>
+        </section>
 	</body>
+    <script src="popup.js"></script>
 </html>
