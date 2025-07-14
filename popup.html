@@ -3,35 +3,13 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Simple Timer</title>
-		<style>
-			body {
-				min-width: 200px;
-				font-family: Arial, sans-serif;
-				padding: 10px;
-			}
-            .timer {
-                display: flex;
-                gap: 10px;
-            }
-            .time-bar {
-                width: 100%;
-                height: 10px;
-                background-color: #ccc;
-                border-radius: 5px;
-            }
-            .time-bar-fill {
-                width: 0;
-                height: 10px;
-                background-color: #007bff;
-                border-radius: 5px;
-            }
-		</style>
+		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
         <section class="timer">
             <div id="paused-view">
-                <input type="number" id="time-input" placeholder="Time in minutes">
-                <button id="start-btn">Start</button>
+                <input type="number" class="time-input" placeholder="Minutes">
+                <button id="btn">Start</button>
             </div>
             <div id="active-view" style="display: none;">
                 <div id="timer-display">00:00</div>
@@ -43,6 +21,6 @@
                 <button id="reset-btn">Reset</button>
             </div>
         </section>
+        <script src="popup.js"></script>
 	</body>
-    <script src="popup.js"></script>
 </html>

@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
-    console.log("La extensión se ha instalado.");
+    console.log("La extensión se ha instalado con éxito");
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
