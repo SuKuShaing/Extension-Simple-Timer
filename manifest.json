@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Mi Extensión de Ejemplo",
+    "name": "Simple Timer",
     "version": "1.0",
-    "description": "Una extensión simple que muestra un popup.",
+    "description": "a Simple Timer",
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
@@ -13,7 +13,9 @@
     },
     "permissions": [
         "tabs",
-        "scripting"
+        "scripting",
+        "notifications",
+        "storage"
     ],
     "background": {
         "service_worker": "background.js"
