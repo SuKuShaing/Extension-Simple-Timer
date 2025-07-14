@@ -8,18 +8,18 @@
 	<body>
         <section class="timer">
             <div id="paused-view">
-                <input type="number" class="time-input" placeholder="Minutes">
-                <button id="btn">Start</button>
-            </div>
-            <div id="active-view" style="display: none;">
-                <div id="timer-display">00:00</div>
-                <div class="time-bar">
-                    <div id="time-bar-fill" class="time-bar-fill"></div>
-                </div>
-                <button id="pause-btn">Pause</button>
-                <button id="resume-btn">Resume</button>
-                <button id="reset-btn">Reset</button>
-            </div>
+    <input type="number" class="time-input" placeholder="Minutes" min="1">
+    <button id="start-btn">Start</button>
+</div>
+<div id="active-view" style="display: none;">
+    <div id="timer-display">00:00</div>
+    <div class="time-bar">
+        <div id="time-bar-fill" class="time-bar-fill"></div>
+    </div>
+    <button id="pause-btn">Pause</button>
+    <button id="resume-btn" style="display:none;">Resume</button>
+    <button id="reset-btn">Reset</button>
+</div>
         </section>
         <script src="popup.js"></script>
 	</body>
