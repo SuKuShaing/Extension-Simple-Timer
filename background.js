@@ -1,98 +1,110 @@
-let timer = null;
-let endTime = null;
-let paused = false;
-let pauseTime = null;
+const MAX_TIMERS = 5;
+let timers = {}; // { id: { timer, endTime, paused, pauseTime } }
 
 function saveState() {
-    chrome.storage.local.set({ timerState: { endTime, paused, pauseTime } });
+    // Guardar solo endTime, paused, pauseTime (no funciones)
+    let state = {};
+    for (let id in timers) {
+        state[id] = {
+            endTime: timers[id].endTime,
+            paused: timers[id].paused,
+            pauseTime: timers[id].pauseTime
+        };
+    }
+    chrome.storage.local.set({ timersState: state });
 }
 
-function clearState() {
-    chrome.storage.local.remove('timerState');
+function clearState(id) {
+    if (timers[id]) delete timers[id];
+    saveState();
 }
 
-function notify() {
+function notify(id) {
     chrome.notifications.create({
         type: "basic",
         iconUrl: "icon128.png",
-        title: "¡Tiempo terminado!",
-        message: "El temporizador ha finalizado."
+        title: `¡Temporizador ${id} terminado!`,
+        message: `El temporizador ${id} ha finalizado.`
     });
 }
 
-function stopTimer() {
-    if (timer) clearTimeout(timer);
-    timer = null;
-    endTime = null;
-    paused = false;
-    pauseTime = null;
-    clearState();
+function stopTimer(id) {
+    if (timers[id] && timers[id].timer) clearTimeout(timers[id].timer);
+    timers[id] = { timer: null, endTime: null, paused: false, pauseTime: null };
+    clearState(id);
 }
 
-function startTimer(minutes) {
-    stopTimer();
-    endTime = Date.now() + minutes * 60 * 1000;
-    paused = false;
-    pauseTime = null;
+function startTimer(id, minutes) {
+    stopTimer(id);
+    const endTime = Date.now() + minutes * 60 * 1000;
+    timers[id] = { timer: null, endTime, paused: false, pauseTime: null };
     saveState();
-    timer = setTimeout(() => {
-        notify();
-        stopTimer();
+    timers[id].timer = setTimeout(() => {
+        notify(id);
+        stopTimer(id);
     }, minutes * 60 * 1000);
 }
 
-function pauseTimer() {
-    if (!paused && endTime) {
-        paused = true;
-        pauseTime = Date.now();
-        if (timer) clearTimeout(timer);
+function pauseTimer(id) {
+    if (timers[id] && !timers[id].paused && timers[id].endTime) {
+        timers[id].paused = true;
+        timers[id].pauseTime = Date.now();
+        if (timers[id].timer) clearTimeout(timers[id].timer);
         saveState();
     }
 }
 
-function resumeTimer() {
-    if (paused && endTime && pauseTime) {
-        let timeLeft = endTime - pauseTime;
-        endTime = Date.now() + timeLeft;
-        paused = false;
-        pauseTime = null;
+function resumeTimer(id) {
+    if (timers[id] && timers[id].paused && timers[id].endTime && timers[id].pauseTime) {
+        let timeLeft = timers[id].endTime - timers[id].pauseTime;
+        timers[id].endTime = Date.now() + timeLeft;
+        timers[id].paused = false;
+        timers[id].pauseTime = null;
         saveState();
-        timer = setTimeout(() => {
-            notify();
-            stopTimer();
+        timers[id].timer = setTimeout(() => {
+            notify(id);
+            stopTimer(id);
         }, timeLeft);
     }
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-    stopTimer();
+    for (let i = 1; i <= MAX_TIMERS; i++) stopTimer(i);
     console.log("La extensión se ha instalado con éxito");
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    const id = message.id;
+    if (!id || id < 1 || id > MAX_TIMERS) {
+        sendResponse({ error: "ID de temporizador inválido" });
+        return true;
+    }
     if (message.action === "start_timer") {
-        startTimer(message.minutes);
+        startTimer(id, message.minutes);
         sendResponse({ started: true });
     } else if (message.action === "pause_timer") {
-        pauseTimer();
+        pauseTimer(id);
         sendResponse({ paused: true });
     } else if (message.action === "resume_timer") {
-        resumeTimer();
+        resumeTimer(id);
         sendResponse({ resumed: true });
     } else if (message.action === "reset_timer") {
-        stopTimer();
+        stopTimer(id);
         sendResponse({ reset: true });
     } else if (message.action === "get_timer_status") {
-        let timeLeft = 0;
-        if (endTime) {
-            timeLeft = paused && pauseTime ? endTime - pauseTime : endTime - Date.now();
+        let timeLeft = 0, total = 0;
+        let t = timers[id];
+        if (t && t.endTime) {
+            timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - Date.now();
             if (timeLeft < 0) timeLeft = 0;
+            total = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - (t.paused && t.pauseTime ? t.pauseTime : Date.now()) + timeLeft;
         }
         sendResponse({
             timeLeft,
-            isRunning: !!timer && !paused,
-            paused,
-            endTime
+            isRunning: !!(t && t.timer && !t.paused),
+            paused: t ? t.paused : false,
+            endTime: t ? t.endTime : null,
+            totalTime: total
         });
         return true;
     }
@@ -100,20 +112,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // Restaurar estado al cargar el service worker
-chrome.storage.local.get('timerState', (data) => {
-    if (data.timerState && data.timerState.endTime) {
-        endTime = data.timerState.endTime;
-        paused = data.timerState.paused;
-        pauseTime = data.timerState.pauseTime;
-        if (endTime && !paused) {
-            let timeLeft = endTime - Date.now();
-            if (timeLeft > 0) {
-                timer = setTimeout(() => {
-                    notify();
-                    stopTimer();
-                }, timeLeft);
-            } else {
-                stopTimer();
+chrome.storage.local.get('timersState', (data) => {
+    if (data.timersState) {
+        for (let id in data.timersState) {
+            let t = data.timersState[id];
+            timers[id] = { timer: null, endTime: t.endTime, paused: t.paused, pauseTime: t.pauseTime };
+            if (timers[id].endTime && !timers[id].paused) {
+                let timeLeft = timers[id].endTime - Date.now();
+                if (timeLeft > 0) {
+                    timers[id].timer = setTimeout(() => {
+                        notify(id);
+                        stopTimer(id);
+                    }, timeLeft);
+                } else {
+                    stopTimer(id);
+                }
             }
         }
     }
