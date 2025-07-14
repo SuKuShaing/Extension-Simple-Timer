@@ -1,5 +1,5 @@
 body {
-	min-width: 300px;
+	min-width: 280px;
 	font-family: Arial, sans-serif;
 	padding: 10px;
 	display: flex;
@@ -31,9 +31,16 @@ section {
 	background-color: #ccc;
 	border-radius: 5px;
 }
+
 .time-bar-fill {
 	width: 0;
 	height: 10px;
 	background-color: #007bff;
 	border-radius: 5px;
+}
+
+.buttons {
+	display: flex;
+	gap: 10px;
+	min-width: 100px;
 }
