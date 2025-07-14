@@ -28,6 +28,18 @@ function TimerController(id) {
     this.pausedView = document.querySelector(`.timer-${id} .paused-view`);
     this.activeView = document.getElementById(`active-view-${id}`);
     this.timeBarFill = document.getElementById(`time-bar-fill-${id}`);
+
+    // Restaurar el valor guardado al iniciar
+    chrome.storage.local.get([`timerInputValue-${id}`], (result) => {
+        if (result[`timerInputValue-${id}`] !== undefined) {
+            this.timeInput.value = result[`timerInputValue-${id}`];
+        }
+    });
+
+    // Guardar el valor cada vez que el usuario lo cambie
+    this.timeInput.addEventListener('input', () => {
+        chrome.storage.local.set({ [`timerInputValue-${id}`]: this.timeInput.value });
+    });
     this.totalTime = null;
     this.timerInterval = null;
 
