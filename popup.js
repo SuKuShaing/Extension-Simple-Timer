@@ -115,47 +115,8 @@ function TimerController(id) {
 }
 
 // Instanciar los 5 temporizadores
-for (let i = 1; i <= 5; i++) {
-    new TimerController(i);
-}
-
-
-function pollStatus() {
-    chrome.runtime.sendMessage({ action: "get_timer_status" }, (status) => {
-        updateUI(status);
-        if ((status.isRunning || status.paused) && status.timeLeft > 0) {
-            timerInterval = setTimeout(pollStatus, 1000);
-        } else {
-            timerInterval = null;
-        }
-    });
-}
-
-startBtn.addEventListener("click", () => {
-    const minutes = parseInt(timeInput.value, 10);
-    if (!minutes || minutes <= 0) return;
-    chrome.runtime.sendMessage({ action: "start_timer", minutes }, () => {
-        pollStatus();
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    for (let i = 1; i <= 5; i++) {
+        new TimerController(i);
+    }
 });
-
-pauseBtn.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "pause_timer" }, () => {
-        pollStatus();
-    });
-});
-
-resumeBtn.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "resume_timer" }, () => {
-        pollStatus();
-    });
-});
-
-resetBtn.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "reset_timer" }, () => {
-        pollStatus();
-    });
-});
-
-// Al abrir el popup, consulta el estado del temporizador
-pollStatus();
