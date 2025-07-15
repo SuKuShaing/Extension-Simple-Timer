@@ -111,8 +111,11 @@ function notify(id, minutos_ingresado) {
  */
 function stopTimer(id) {
     if (timers[id] && timers[id].timer) clearTimeout(timers[id].timer);
-    timers[id] = { timer: null, endTime: null, paused: false, pauseTime: null };
     clearState(id);
+
+    // Después de detener, verifica si queda algún temporizador activo y actualiza el icono.
+    const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+    updateExtensionIcon(anyActive);
 }
 
 /**
