@@ -10,6 +10,38 @@
 const MAX_TIMERS = 5;
 let timers = {}; // { id: { timer, endTime, paused, pauseTime, totalTime } }
 
+// Promesa que se resuelve cuando el estado de los temporizadores se ha restaurado desde el almacenamiento.
+// Esto previene condiciones de carrera al iniciar el script de fondo.
+const stateRestored = new Promise(resolve => {
+    chrome.storage.local.get('timersState', (data) => {
+        if (data.timersState) {
+            for (let id in data.timersState) {
+                let t = data.timersState[id];
+                timers[id] = {
+                    timer: null,
+                    endTime: t.endTime,
+                    paused: t.paused,
+                    pauseTime: t.pauseTime,
+                    totalTime: t.totalTime,
+                    originalMinutes: t.originalMinutes
+                };
+                if (timers[id].endTime && !timers[id].paused) {
+                    let timeLeft = timers[id].endTime - Date.now();
+                    if (timeLeft > 0) {
+                        timers[id].timer = setTimeout(() => {
+                            notify(id, timers[id].originalMinutes);
+                            stopTimer(id);
+                        }, timeLeft);
+                    } else {
+                        stopTimer(id);
+                    }
+                }
+            }
+        }
+        resolve(); // La restauración ha finalizado
+    });
+});
+
 /**
  * Guarda el estado actual de todos los temporizadores en chrome.storage.local
  * para asegurar persistencia entre recargas del background.
@@ -152,53 +184,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         stopTimer(id);
         sendResponse({ reset: true });
     } else if (message.action === "get_timer_status") {
-        let timeLeft = 0, total = 0;
-        let t = timers[id];
-        if (t && t.endTime) {
-            timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - Date.now();
-            if (timeLeft < 0) timeLeft = 0;
-            total = t.totalTime || 0;
-        }
-        sendResponse({
-            timeLeft,
-            isRunning: !!(t && t.timer && !t.paused),
-            paused: t ? t.paused : false,
-            endTime: t ? t.endTime : null,
-            totalTime: total
+        // Espera a que el estado se restaure antes de responder
+        stateRestored.then(() => {
+            let timeLeft = 0, total = 0;
+            let t = timers[id];
+            if (t && t.endTime) {
+                timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - Date.now();
+                if (timeLeft < 0) timeLeft = 0;
+                total = t.totalTime || 0;
+            }
+            sendResponse({
+                timeLeft,
+                isRunning: !!(t && t.timer && !t.paused),
+                paused: t ? t.paused : false,
+                endTime: t ? t.endTime : null,
+                totalTime: total
+            });
         });
-        return true;
+        return true; // Indica que la respuesta será asíncrona
+
     }
     return true;
 });
 
-/**
- * Al iniciar el service worker (background), recupera el estado de los temporizadores guardados
- * en chrome.storage.local y los restaura en memoria. Así, los temporizadores continúan funcionando
- * después de recargas o cierres del background.
- */
-chrome.storage.local.get('timersState', (data) => {
-    if (data.timersState) {
-        for (let id in data.timersState) {
-            let t = data.timersState[id];
-            timers[id] = {
-                timer: null,
-                endTime: t.endTime,
-                paused: t.paused,
-                pauseTime: t.pauseTime,
-                totalTime: t.totalTime,
-                originalMinutes: t.originalMinutes
-            };
-            if (timers[id].endTime && !timers[id].paused) {
-                let timeLeft = timers[id].endTime - Date.now();
-                if (timeLeft > 0) {
-                    timers[id].timer = setTimeout(() => {
-                        notify(id, timers[id].originalMinutes);
-                        stopTimer(id);
-                    }, timeLeft);
-                } else {
-                    stopTimer(id);
-                }
-            }
-        }
-    }
-});
+
