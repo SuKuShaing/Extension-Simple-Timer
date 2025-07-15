@@ -21,7 +21,9 @@ function saveState() {
         state[id] = {
             endTime: timers[id].endTime,
             paused: timers[id].paused,
-            pauseTime: timers[id].pauseTime
+            pauseTime: timers[id].pauseTime,
+            totalTime: timers[id].totalTime,
+            originalMinutes: timers[id].originalMinutes
         };
     }
     chrome.storage.local.set({ timersState: state });
@@ -39,12 +41,13 @@ function clearState(id) {
  * Muestra una notificación nativa cuando un temporizador finaliza.
  * @param {number} id - ID del temporizador que terminó.
  */
-function notify(id) {
+function notify(id, minutos_ingresado) {
+    const displayTime = minutos_ingresado > 0 ? `${minutos_ingresado} minuto(s)` : "el tiempo";
     chrome.notifications.create({
         type: "basic",
         iconUrl: "icon128.png",
-        title: `¡Temporizador ${id} terminado!`,
-        message: `El temporizador ${id} ha finalizado.`,
+        title: `¡${displayTime} minutos terminado!`,
+        message: `Tu temporizador de ${displayTime} minutos ha finalizado.`,
         priority: 2, // Prioridad alta (0-2)
         requireInteraction: true, // Evita que se oculte automáticamente
         silent: false, // Permite sonido
@@ -73,13 +76,14 @@ function startTimer(id, minutes) {
     const totalTime = minutes * 60 * 1000;
     timers[id] = {
         timer: setTimeout(() => {
-            notify(id);
+            notify(id, minutes);
             stopTimer(id);
         }, totalTime),
         endTime: now + totalTime,
         paused: false,
         pauseTime: null,
-        totalTime: totalTime
+        totalTime: totalTime,
+        originalMinutes: minutes
     };
     saveState();
 }
@@ -109,7 +113,7 @@ function resumeTimer(id) {
         timers[id].pauseTime = null;
         saveState();
         timers[id].timer = setTimeout(() => {
-            notify(id);
+            notify(id, timers[id].originalMinutes);
             stopTimer(id);
         }, timeLeft);
     }
@@ -181,13 +185,14 @@ chrome.storage.local.get('timersState', (data) => {
                 endTime: t.endTime,
                 paused: t.paused,
                 pauseTime: t.pauseTime,
-                totalTime: t.totalTime // restaurar el tiempo total
+                totalTime: t.totalTime,
+                originalMinutes: t.originalMinutes
             };
             if (timers[id].endTime && !timers[id].paused) {
                 let timeLeft = timers[id].endTime - Date.now();
                 if (timeLeft > 0) {
                     timers[id].timer = setTimeout(() => {
-                        notify(id);
+                        notify(id, timers[id].originalMinutes);
                         stopTimer(id);
                     }, timeLeft);
                 } else {
