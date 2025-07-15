@@ -110,10 +110,13 @@ function notify(id, minutos_ingresado) {
  * @param {number} id - ID del temporizador a detener.
  */
 function stopTimer(id) {
-    if (timers[id] && timers[id].timer) clearTimeout(timers[id].timer);
-    clearState(id);
+    if (timers[id] && timers[id].timer) {
+        clearTimeout(timers[id].timer);
+    }
+    delete timers[id]; // Elimina completamente la entrada
+    saveState();
 
-    // Después de detener, verifica si queda algún temporizador activo y actualiza el icono.
+    // Ahora revisa si queda alguno activo y actualiza el icono
     const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
     updateExtensionIcon(anyActive);
 }
