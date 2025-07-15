@@ -128,6 +128,7 @@ function TimerController(id) {
             if (!minutes || minutes <= 0) return;
             chrome.runtime.sendMessage({ action: "start_timer", minutes, id: this.id }, () => {
                 this.pollStatus();
+                setTimeout(notifyIconState, 100);
             });
         });
     }
@@ -135,6 +136,7 @@ function TimerController(id) {
         this.pauseBtn.addEventListener("click", () => {
             chrome.runtime.sendMessage({ action: "pause_timer", id: this.id }, () => {
                 this.pollStatus();
+                setTimeout(notifyIconState, 100);
             });
         });
     }
@@ -142,6 +144,7 @@ function TimerController(id) {
         this.resumeBtn.addEventListener("click", () => {
             chrome.runtime.sendMessage({ action: "resume_timer", id: this.id }, () => {
                 this.pollStatus();
+                setTimeout(notifyIconState, 100);
             });
         });
     }
@@ -149,6 +152,7 @@ function TimerController(id) {
         this.resetBtn.addEventListener("click", () => {
             chrome.runtime.sendMessage({ action: "reset_timer", id: this.id }, () => {
                 this.pollStatus();
+                setTimeout(notifyIconState, 100);
             });
         });
     }
@@ -160,6 +164,23 @@ function TimerController(id) {
  * Al cargar el DOM, instancia los controladores de los 5 temporizadores
  * para inicializar la interfaz y enlazar los controles.
  */
+// Notifica al background si hay al menos un temporizador activo
+function notifyIconState() {
+    let checks = [];
+    for (let i = 1; i <= 5; i++) {
+        checks.push(new Promise(resolve => {
+            chrome.runtime.sendMessage({ action: "get_timer_status", id: i }, status => {
+                resolve(!!(status && status.isRunning));
+            });
+        }));
+    }
+    Promise.all(checks).then(results => {
+        const anyActive = results.some(Boolean);
+        // No es necesario enviar mensaje especial, el background ya actualiza el icono
+        // Pero si quieres forzar, puedes enviar un mensaje aquí
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);

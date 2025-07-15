@@ -10,6 +10,22 @@
 const MAX_TIMERS = 5;
 let timers = {}; // { id: { timer, endTime, paused, pauseTime, totalTime } }
 
+// Cambia el icono de la extensión según si hay temporizadores activos
+function updateExtensionIcon(isActive) {
+    const iconPath = isActive ? {
+        16: "icon_active16.png",
+        32: "icon_active32.png",
+        48: "icon_active48.png",
+        128: "icon_active128.png"
+    } : {
+        16: "icon16.png",
+        32: "icon32.png",
+        48: "icon48.png",
+        128: "icon128.png"
+    };
+    chrome.action.setIcon({ path: iconPath });
+}
+
 // Promesa que se resuelve cuando el estado de los temporizadores se ha restaurado desde el almacenamiento.
 // Esto previene condiciones de carrera al iniciar el script de fondo.
 const stateRestored = new Promise(resolve => {
@@ -38,6 +54,9 @@ const stateRestored = new Promise(resolve => {
                 }
             }
         }
+        // Al restaurar el estado, actualiza el icono según si hay temporizadores activos
+        const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+        updateExtensionIcon(anyActive);
         resolve(); // La restauración ha finalizado
     });
 });
@@ -172,15 +191,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
     if (message.action === "start_timer") {
+        // Después de iniciar el temporizador, actualiza el icono
+        setTimeout(() => {
+            // Chequea si hay algún temporizador activo
+            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            updateExtensionIcon(anyActive);
+        }, 50);
+
         startTimer(id, message.minutes);
         sendResponse({ started: true });
     } else if (message.action === "pause_timer") {
+        setTimeout(() => {
+            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            updateExtensionIcon(anyActive);
+        }, 50);
+
         pauseTimer(id);
         sendResponse({ paused: true });
     } else if (message.action === "resume_timer") {
+        setTimeout(() => {
+            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            updateExtensionIcon(anyActive);
+        }, 50);
+
         resumeTimer(id);
         sendResponse({ resumed: true });
     } else if (message.action === "reset_timer") {
+        // Después de resetear, actualiza el icono
+        setTimeout(() => {
+            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            updateExtensionIcon(anyActive);
+        }, 50);
+
         stopTimer(id);
         sendResponse({ reset: true });
     } else if (message.action === "get_timer_status") {
