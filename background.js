@@ -44,7 +44,10 @@ function notify(id) {
         type: "basic",
         iconUrl: "icon128.png",
         title: `¡Temporizador ${id} terminado!`,
-        message: `El temporizador ${id} ha finalizado.`
+        message: `El temporizador ${id} ha finalizado.`,
+        priority: 2, // Prioridad alta (0-2)
+        requireInteraction: true, // Evita que se oculte automáticamente
+        silent: false, // Permite sonido
     });
 }
 
