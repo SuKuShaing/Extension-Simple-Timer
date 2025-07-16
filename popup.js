@@ -182,12 +182,13 @@ function notifyIconState() {
 }
 
 // Listener para reproducir sonido cuando el background lo solicite
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+// comenté esta función porque no permite reproducir sonidos a menos que el popup esté abierto
+/* chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "play_sound" && message.sound) {
         const audio = new Audio(chrome.runtime.getURL('Sonidos/' + message.sound));
         audio.play();
     }
-});
+}); */
 
 document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {

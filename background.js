@@ -97,7 +97,8 @@ function notify(id, minutos_ingresado) {
     stopTimer(id);
 
     // Enviar mensaje para reproducir sonido desde el popup
-    chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
+    // comenté esta función porque no permite reproducir sonidos a menos que el popup esté abierto
+    // chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
 
     // Muestra la notificación
     const displayTime = minutos_ingresado > 0 ? `${minutos_ingresado} minuto(s)` : "el tiempo";

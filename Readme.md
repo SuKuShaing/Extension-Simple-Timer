@@ -7,7 +7,7 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## To Do
-- [ ] Colocar en la función notify que ejecute el sonido de finalizado
+- [x] Colocar en la función notify que ejecute el sonido de finalizado -> <P style="opacity: 0.5;">_MV3 no permite reproducir sonidos desde el service worker (background.js), solo desde el popup.js y cuando el popup esté abierto_</P>
 - [ ] En la función notify que se envíe a eliminar el temporizador finalizado
 - [ ] En la función notify que se envíe a actualizar el icono de la extensión a normal
 - [ ] La función de actualizar el icono de la extensión debe verificar si hay al menos un temporizador activo
