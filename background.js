@@ -26,8 +26,7 @@ function updateExtensionIcon(isActive) {
     chrome.action.setIcon({ path: iconPath });
 }
 
-// Promesa que se resuelve cuando el estado de los temporizadores se ha restaurado desde el almacenamiento.
-// Esto previene condiciones de carrera al iniciar el script de fondo.
+// Al restaurar el estado, reprograma las alarmas si corresponde
 const stateRestored = new Promise(resolve => {
     chrome.storage.local.get('timersState', (data) => {
         if (data.timersState) {
@@ -44,17 +43,17 @@ const stateRestored = new Promise(resolve => {
                 if (timers[id].endTime && !timers[id].paused) {
                     let timeLeft = timers[id].endTime - Date.now();
                     if (timeLeft > 0) {
-                        timers[id].timer = setTimeout(() => {
-                            notify(id, timers[id].originalMinutes);
-                        }, timeLeft);
+                        // Reprograma la alarma para la notificación final
+                        chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
                     } else {
-                        stopTimer(id);
+                        // Si ya pasó el tiempo, dispara la notificación inmediatamente
+                        notify(id, timers[id].originalMinutes);
                     }
                 }
             }
         }
         // Al restaurar el estado, actualiza el icono según si hay temporizadores activos
-        const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+        const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
         updateExtensionIcon(anyActive);
         resolve(); // La restauración ha finalizado
     });
@@ -128,11 +127,13 @@ function stopTimer(id) {
     if (timers[id] && timers[id].timer) {
         clearTimeout(timers[id].timer);
     }
+    // Limpia la alarma asociada
+    chrome.alarms.clear(`timer-${id}`);
     delete timers[id]; // Elimina completamente la entrada
     saveState();
 
     // Ahora revisa si queda alguno activo y actualiza el icono
-    const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+    const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
     updateExtensionIcon(anyActive);
 }
 
@@ -146,17 +147,18 @@ function startTimer(id, minutes) {
     stopTimer(id);
     const now = Date.now();
     const totalTime = minutes * 60 * 1000;
+    const endTime = now + totalTime;
     timers[id] = {
-        timer: setTimeout(() => {
-            notify(id, minutes);
-        }, totalTime),
-        endTime: now + totalTime,
+        timer: null, // Ya no usamos setTimeout para la notificación final
+        endTime: endTime,
         paused: false,
         pauseTime: null,
         totalTime: totalTime,
         originalMinutes: minutes
     };
     saveState();
+    // Crea la alarma para la notificación final
+    chrome.alarms.create(`timer-${id}`, { when: endTime });
 }
 
 /**
@@ -167,7 +169,8 @@ function pauseTimer(id) {
     if (timers[id] && !timers[id].paused && timers[id].endTime) {
         timers[id].paused = true;
         timers[id].pauseTime = Date.now();
-        if (timers[id].timer) clearTimeout(timers[id].timer);
+        // Limpia la alarma asociada
+        chrome.alarms.clear(`timer-${id}`);
         saveState();
     }
 }
@@ -183,9 +186,8 @@ function resumeTimer(id) {
         timers[id].paused = false;
         timers[id].pauseTime = null;
         saveState();
-        timers[id].timer = setTimeout(() => {
-            notify(id, timers[id].originalMinutes);
-        }, timeLeft);
+        // Crea la alarma para el tiempo restante
+        chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
     }
 }
 
@@ -213,7 +215,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Después de iniciar el temporizador, actualiza el icono
         setTimeout(() => {
             // Chequea si hay algún temporizador activo
-            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
             updateExtensionIcon(anyActive);
         }, 50);
 
@@ -221,7 +223,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ started: true });
     } else if (message.action === "pause_timer") {
         setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
             updateExtensionIcon(anyActive);
         }, 50);
 
@@ -229,7 +231,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ paused: true });
     } else if (message.action === "resume_timer") {
         setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
             updateExtensionIcon(anyActive);
         }, 50);
 
@@ -238,7 +240,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.action === "reset_timer") {
         // Después de resetear, actualiza el icono
         setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && t.timer && !t.paused);
+            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
             updateExtensionIcon(anyActive);
         }, 50);
 
@@ -266,6 +268,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     }
     return true;
+});
+
+// Listener para alarmas de Chrome (notificación final)
+chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name.startsWith('timer-')) {
+        const id = parseInt(alarm.name.split('-')[1], 10);
+        if (timers[id]) {
+            notify(id, timers[id].originalMinutes);
+        }
+    }
 });
 
 
