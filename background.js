@@ -96,15 +96,8 @@ function notify(id, minutos_ingresado) {
     // Primero detiene el temporizador
     stopTimer(id);
 
-    // Ejecuta el sonido service-bell.mp3
-    try {
-        const audio = new Audio(chrome.runtime.getURL('Sonidos/service-bell.mp3'));
-        audio.play().catch(error => {
-            console.log('Error reproduciendo sonido:', error);
-        });
-    } catch (error) {
-        console.log('Error creando audio:', error);
-    }
+    // Enviar mensaje para reproducir sonido desde el popup
+    chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
 
     // Muestra la notificación
     const displayTime = minutos_ingresado > 0 ? `${minutos_ingresado} minuto(s)` : "el tiempo";

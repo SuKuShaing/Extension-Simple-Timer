@@ -181,6 +181,14 @@ function notifyIconState() {
     });
 }
 
+// Listener para reproducir sonido cuando el background lo solicite
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "play_sound" && message.sound) {
+        const audio = new Audio(chrome.runtime.getURL('Sonidos/' + message.sound));
+        audio.play();
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);
