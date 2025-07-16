@@ -13,15 +13,15 @@ let timers = {}; // { id: { timer, endTime, paused, pauseTime, totalTime } }
 // Cambia el icono de la extensión según si hay temporizadores activos
 function updateExtensionIcon(isActive) {
     const iconPath = isActive ? {
-        16: "./Iconos/icon_active16.png",
-        32: "./Iconos/icon_active32.png",
-        48: "./Iconos/icon_active48.png",
-        128: "./Iconos/icon_active128.png"
+        16: "Iconos/icon_active16.png",
+        32: "Iconos/icon_active32.png",
+        48: "Iconos/icon_active48.png",
+        128: "Iconos/icon_active128.png"
     } : {
-        16: "./Iconos/icon16.png",
-        32: "./Iconos/icon32.png",
-        48: "./Iconos/icon48.png",
-        128: "./Iconos/icon128.png"
+        16: "Iconos/icon16.png",
+        32: "Iconos/icon32.png",
+        48: "Iconos/icon48.png",
+        128: "Iconos/icon128.png"
     };
     chrome.action.setIcon({ path: iconPath });
 }
@@ -46,7 +46,6 @@ const stateRestored = new Promise(resolve => {
                     if (timeLeft > 0) {
                         timers[id].timer = setTimeout(() => {
                             notify(id, timers[id].originalMinutes);
-                            stopTimer(id);
                         }, timeLeft);
                     } else {
                         stopTimer(id);
@@ -90,14 +89,30 @@ function clearState(id) {
 
 /**
  * Muestra una notificación nativa cuando un temporizador finaliza.
+ * Detiene el temporizador después de mostrar la notificación.
  * @param {number} id - ID del temporizador que terminó.
+ * @param {number} minutos_ingresado - Tiempo ingresado por el usuario.
  */
 function notify(id, minutos_ingresado) {
+    // Primero detiene el temporizador
+    stopTimer(id);
+
+    // Ejecuta el sonido service-bell.mp3
+    try {
+        const audio = new Audio(chrome.runtime.getURL('Sonidos/service-bell.mp3'));
+        audio.play().catch(error => {
+            console.log('Error reproduciendo sonido:', error);
+        });
+    } catch (error) {
+        console.log('Error creando audio:', error);
+    }
+
+    // Muestra la notificación
     const displayTime = minutos_ingresado > 0 ? `${minutos_ingresado} minuto(s)` : "el tiempo";
     chrome.notifications.create({
         type: "basic",
-        iconUrl: "icon128.png",
-        title: `¡${displayTime} minutos terminado!`,
+        iconUrl: "Iconos/icon128.png",
+        title: `¡Tiempo terminado!`,
         message: `Tu temporizador de ${displayTime} minutos ha finalizado.`,
         priority: 2, // Prioridad alta (0-2)
         requireInteraction: true, // Evita que se oculte automáticamente
@@ -134,7 +149,6 @@ function startTimer(id, minutes) {
     timers[id] = {
         timer: setTimeout(() => {
             notify(id, minutes);
-            stopTimer(id);
         }, totalTime),
         endTime: now + totalTime,
         paused: false,
@@ -171,7 +185,6 @@ function resumeTimer(id) {
         saveState();
         timers[id].timer = setTimeout(() => {
             notify(id, timers[id].originalMinutes);
-            stopTimer(id);
         }, timeLeft);
     }
 }
