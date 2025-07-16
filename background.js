@@ -258,7 +258,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             sendResponse({
                 timeLeft,
-                isRunning: !!(t && t.timer && !t.paused),
+                isRunning: !!(t && !t.paused && t.endTime && t.endTime > Date.now()),
                 paused: t ? t.paused : false,
                 endTime: t ? t.endTime : null,
                 totalTime: total
