@@ -13,15 +13,15 @@ let timers = {}; // { id: { timer, endTime, paused, pauseTime, totalTime } }
 // Cambia el icono de la extensión según si hay temporizadores activos
 function updateExtensionIcon(isActive) {
     const iconPath = isActive ? {
-        16: "icon_active16.png",
-        32: "icon_active32.png",
-        48: "icon_active48.png",
-        128: "icon_active128.png"
+        16: "./Iconos/icon_active16.png",
+        32: "./Iconos/icon_active32.png",
+        48: "./Iconos/icon_active48.png",
+        128: "./Iconos/icon_active128.png"
     } : {
-        16: "icon16.png",
-        32: "icon32.png",
-        48: "icon48.png",
-        128: "icon128.png"
+        16: "./Iconos/icon16.png",
+        32: "./Iconos/icon32.png",
+        48: "./Iconos/icon48.png",
+        128: "./Iconos/icon128.png"
     };
     chrome.action.setIcon({ path: iconPath });
 }
