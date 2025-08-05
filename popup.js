@@ -123,6 +123,11 @@ function TimerController(id) {
      */
     this.pollStatus = () => {
         chrome.runtime.sendMessage({ action: "get_timer_status", id: this.id }, (status) => {
+            if (chrome.runtime.lastError) {
+                console.error(`[TIMER DEBUG] Error obteniendo estado del timer ${this.id}:`, chrome.runtime.lastError);
+                return;
+            }
+            
             this.updateUI(status);
             if ((status.isRunning || status.paused) && status.timeLeft > 0) {
                 this.timerInterval = setTimeout(this.pollStatus, 1000);
@@ -136,7 +141,13 @@ function TimerController(id) {
         this.startBtn.addEventListener("click", () => {
             const minutes = parseInt(this.timeInput.value, 10);
             if (!minutes || minutes <= 0) return;
-            chrome.runtime.sendMessage({ action: "start_timer", minutes, id: this.id }, () => {
+            
+            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} por ${minutes} minutos desde popup`);
+            chrome.runtime.sendMessage({ action: "start_timer", minutes, id: this.id }, (response) => {
+                if (chrome.runtime.lastError) {
+                    console.error(`[TIMER DEBUG] Error iniciando timer ${this.id}:`, chrome.runtime.lastError);
+                    return;
+                }
                 this.pollStatus();
                 setTimeout(notifyIconState, 100);
             });

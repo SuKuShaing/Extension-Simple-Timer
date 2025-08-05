@@ -7,21 +7,17 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## Bug de desactivación
-Hay un bug, no sé sí pasado cierto tiempo el temporizador mata los temporizadores o sí al colocar más de 3, los temporizadores restantes desaparecen
+Hay un bug, al colocar más de 2, los temporizadores restantes desaparecen
 
 #### Experimentos de cantidad
 - Experimento uno: 4 temporizadores, tiempo más largo de 20 minutos, solo se activaron 3 y pasado los 15 minutos se canceló el último temporizador
 - Experimento dos: 5 temporizadores, tiempo más largo de 20 minutos, se activaron solo 1 y pasado los 11 minutos se cancelaron el resto de los temporizadores
 - Experimento tres: 3 temporizadores, tiempo más largo de 30 minutos, de los cuales se activaron 2, el primero y el último, el segundo no se activó
 - Experimento cuatro: 5 temporizadores, tiempo más largo de 30 minutos, solo el primero se activó, al minuto 15 fuí a revisar y todos se habían reiniciado
-
-#### Experimentos de tiempo
-- Experimento uno: 1 temporizador por 30 minutos, veremos sí llega a termino -> sí llegó, experimento exitoso y el icono volvió a estado normal
-- Experimento dos: 1 temporizador por 5 minutos, veremos sí llega a termino -> sí llegó, experimento exitoso y el icono volvió a estado normal
-- Experimento tres: 1 temporizador por 60 minutos, veremos sí llega a termino -> sí llegó y sin tocar el popup.html, experimento exitoso y el icono volvió a estado normal
-
+- Experimento cinco: 2 temporizadores, tiempo más largo de 20 minutos, solo el primero se activó, fuí a revisar y el otro se había desactivado
 
 ## To Do
+- [ ] Resolver el bug de desactivación de los temporizadores
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
 - [x] Colocar en la función notify que ejecute el sonido de finalizado -> <P style="opacity: 0.6;">_MV3 no permite reproducir sonidos desde el service worker (background.js), solo desde el popup.js y cuando el popup.html esté abierto_</P>

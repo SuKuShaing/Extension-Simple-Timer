@@ -29,6 +29,8 @@ function updateExtensionIcon(isActive) {
 // Al restaurar el estado, reprograma las alarmas si corresponde
 const stateRestored = new Promise(resolve => {
     chrome.storage.local.get('timersState', (data) => {
+        console.log('[TIMER DEBUG] Restaurando estado:', data.timersState);
+        
         if (data.timersState) {
             for (let id in data.timersState) {
                 let t = data.timersState[id];
@@ -40,42 +42,69 @@ const stateRestored = new Promise(resolve => {
                     totalTime: t.totalTime,
                     originalMinutes: t.originalMinutes
                 };
+                
                 if (timers[id].endTime && !timers[id].paused) {
                     let timeLeft = timers[id].endTime - Date.now();
-                    if (timeLeft > 0) {
-                        // Reprograma la alarma para la notificación final
-                        chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
+                    console.log(`[TIMER DEBUG] Timer ${id}: timeLeft = ${timeLeft}ms (${Math.ceil(timeLeft/1000)}s)`);
+                    
+                    // Dar margen de tolerancia de 30 segundos para evitar cancelaciones prematuras
+                    if (timeLeft > -30000) { // Si pasaron menos de 30 segundos del tiempo límite
+                        if (timeLeft > 0) {
+                            // Reprograma la alarma para la notificación final
+                            chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
+                            console.log(`[TIMER DEBUG] Timer ${id} reprogramado`);
+                        } else {
+                            // Está en el margen de tolerancia, asume que debe notificar ahora
+                            console.log(`[TIMER DEBUG] Timer ${id} debe notificar (margen de tolerancia)`);
+                            notify(id, timers[id].originalMinutes);
+                        }
                     } else {
-                        // Si ya pasó el tiempo, dispara la notificación inmediatamente
-                        notify(id, timers[id].originalMinutes);
+                        // Expiró hace más de 30 segundos, elimina silenciosamente
+                        console.log(`[TIMER DEBUG] Timer ${id} expirado hace tiempo, eliminando silenciosamente`);
+                        delete timers[id];
                     }
                 }
             }
+            // Guarda el estado limpio después de eliminar temporizadores obsoletos
+            saveState();
         }
+        
         // Al restaurar el estado, actualiza el icono según si hay temporizadores activos
         const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
         updateExtensionIcon(anyActive);
+        console.log('[TIMER DEBUG] Estado restaurado, timers activos:', anyActive);
         resolve(); // La restauración ha finalizado
     });
 });
+
+// Debounce para evitar múltiples escrituras simultáneas al storage
+let saveStateTimeout = null;
 
 /**
  * Guarda el estado actual de todos los temporizadores en chrome.storage.local
  * para asegurar persistencia entre recargas del background.
  */
 function saveState() {
-    // Guardar solo endTime, paused, pauseTime (no funciones)
-    let state = {};
-    for (let id in timers) {
-        state[id] = {
-            endTime: timers[id].endTime,
-            paused: timers[id].paused,
-            pauseTime: timers[id].pauseTime,
-            totalTime: timers[id].totalTime,
-            originalMinutes: timers[id].originalMinutes
-        };
+    if (saveStateTimeout) {
+        clearTimeout(saveStateTimeout);
     }
-    chrome.storage.local.set({ timersState: state });
+    
+    saveStateTimeout = setTimeout(() => {
+        // Guardar solo endTime, paused, pauseTime (no funciones)
+        let state = {};
+        for (let id in timers) {
+            state[id] = {
+                endTime: timers[id].endTime,
+                paused: timers[id].paused,
+                pauseTime: timers[id].pauseTime,
+                totalTime: timers[id].totalTime,
+                originalMinutes: timers[id].originalMinutes
+            };
+        }
+        console.log('[TIMER DEBUG] Guardando estado:', state);
+        chrome.storage.local.set({ timersState: state });
+        saveStateTimeout = null;
+    }, 100);
 }
 
 /**
@@ -138,21 +167,31 @@ function stopTimer(id) {
  * @param {number} minutes - Duración en minutos.
  */
 function startTimer(id, minutes) {
-    stopTimer(id);
+    console.log(`[TIMER DEBUG] Iniciando timer ${id} por ${minutes} minutos`);
+    
+    // Solo limpia el temporizador específico, no llama a stopTimer que actualiza el icono
+    if (timers[id]) {
+        chrome.alarms.clear(`timer-${id}`);
+    }
+    
     const now = Date.now();
     const totalTime = minutes * 60 * 1000;
     const endTime = now + totalTime;
+    
     timers[id] = {
-        timer: null, // Ya no usamos setTimeout para la notificación final
+        timer: null,
         endTime: endTime,
         paused: false,
         pauseTime: null,
         totalTime: totalTime,
         originalMinutes: minutes
     };
+    
     saveState();
+    
     // Crea la alarma para la notificación final
     chrome.alarms.create(`timer-${id}`, { when: endTime });
+    console.log(`[TIMER DEBUG] Timer ${id} iniciado, termina a las ${new Date(endTime).toLocaleTimeString()}`);
 }
 
 /**
@@ -199,47 +238,46 @@ chrome.runtime.onInstalled.addListener(() => {
  * Gestiona las acciones de temporizador (iniciar, pausar, reanudar, resetear, consultar estado)
  * según el mensaje recibido. Permite la comunicación entre la UI y la lógica de fondo.
  */
+// Debounce para actualización del icono
+let iconUpdateTimeout = null;
+function updateIconDebounced() {
+    if (iconUpdateTimeout) {
+        clearTimeout(iconUpdateTimeout);
+    }
+    iconUpdateTimeout = setTimeout(() => {
+        const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
+        updateExtensionIcon(anyActive);
+        iconUpdateTimeout = null;
+    }, 150);
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const id = message.id;
     if (!id || id < 1 || id > MAX_TIMERS) {
         sendResponse({ error: "ID de temporizador inválido" });
         return true;
     }
+    
     if (message.action === "start_timer") {
-        // Después de iniciar el temporizador, actualiza el icono
-        setTimeout(() => {
-            // Chequea si hay algún temporizador activo
-            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-            updateExtensionIcon(anyActive);
-        }, 50);
-
         startTimer(id, message.minutes);
+        updateIconDebounced();
         sendResponse({ started: true });
+        
     } else if (message.action === "pause_timer") {
-        setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-            updateExtensionIcon(anyActive);
-        }, 50);
-
         pauseTimer(id);
+        updateIconDebounced();
         sendResponse({ paused: true });
+        
     } else if (message.action === "resume_timer") {
-        setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-            updateExtensionIcon(anyActive);
-        }, 50);
-
         resumeTimer(id);
+        updateIconDebounced();
         sendResponse({ resumed: true });
+        
     } else if (message.action === "reset_timer") {
-        // Después de resetear, actualiza el icono
-        setTimeout(() => {
-            const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-            updateExtensionIcon(anyActive);
-        }, 50);
-
         stopTimer(id);
+        updateIconDebounced();
         sendResponse({ reset: true });
+        
     } else if (message.action === "get_timer_status") {
         // Espera a que el estado se restaure antes de responder
         stateRestored.then(() => {
@@ -259,8 +297,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
         });
         return true; // Indica que la respuesta será asíncrona
-
     }
+    
     return true;
 });
 
@@ -268,8 +306,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name.startsWith('timer-')) {
         const id = parseInt(alarm.name.split('-')[1], 10);
-        if (timers[id]) {
+        console.log(`[TIMER DEBUG] Alarma disparada para timer ${id}`);
+        
+        if (timers[id] && !timers[id].paused) {
+            console.log(`[TIMER DEBUG] Notificando timer ${id}`);
             notify(id, timers[id].originalMinutes);
+        } else {
+            console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
         }
     }
 });
