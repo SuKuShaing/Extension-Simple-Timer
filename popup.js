@@ -1,4 +1,4 @@
-/*
+/**
  * popup.js
  *
  * Este archivo implementa la lógica de la interfaz de usuario del popup para la extensión Simple Timer.
@@ -48,7 +48,17 @@ function TimerController(id) {
     this.activeView = document.getElementById(`active-view-${id}`);
     this.timeBarFill = document.getElementById(`time-bar-fill-${id}`);
 
-    // Restaurar el valor guardado al iniciar
+    /**
+     * Restaurar el último valor ingresado en el input por el usuario cuando se abre el popup
+     * y lo coloca en el input.value
+     * 
+     * Ejemplo de resultado:
+     * {
+     *     "timerInputValue-1": "5",
+     *     "timerInputValue-2": "10", 
+     *     "timerInputValue-3": "20",
+     * }
+    */
     chrome.storage.local.get([`timerInputValue-${id}`], (result) => {
         if (result[`timerInputValue-${id}`] !== undefined) {
             this.timeInput.value = result[`timerInputValue-${id}`];
@@ -65,7 +75,7 @@ function TimerController(id) {
     /**
      * Formatea un tiempo en milisegundos a formato mm:ss.
      * @param {number} ms - Milisegundos
-     * @returns {string} Tiempo formateado
+     * @returns {string} Tiempo formateado en formato mm:ss para el display del temporizador
      */
     this.formatTime = function(ms) {
         const totalSeconds = Math.ceil(ms / 1000);
@@ -84,11 +94,11 @@ function TimerController(id) {
             this.pausedView.style.display = "none";
             this.activeView.style.display = "flex";
             this.timerDisplay.textContent = this.formatTime(status.timeLeft);
-            // Inicializar correctamente el tiempo total
+            // Muestra el tiempo total
             if (!this.totalTime || status.totalTime > this.totalTime || !status.isRunning) {
                 this.totalTime = (status.totalTime && status.totalTime > 0) ? status.totalTime : status.timeLeft;
             }
-            // Evita división por cero
+            // Calcula el progreso de la barra de tiempo
             let progress = (this.totalTime > 0) ? (status.timeLeft / this.totalTime) * 100 : 100;
             this.timeBarFill.style.width = `${progress}%`;
             if (status.paused) {
@@ -180,15 +190,6 @@ function notifyIconState() {
         // Pero si quieres forzar, puedes enviar un mensaje aquí
     });
 }
-
-// Listener para reproducir sonido cuando el background lo solicite
-// comenté esta función porque no permite reproducir sonidos a menos que el popup esté abierto
-/* chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "play_sound" && message.sound) {
-        const audio = new Audio(chrome.runtime.getURL('Sonidos/' + message.sound));
-        audio.play();
-    }
-}); */
 
 document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {
