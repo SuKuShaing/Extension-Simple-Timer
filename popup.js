@@ -15,6 +15,7 @@ const timerDisplay = document.getElementById("timer-display");
 const pausedView = document.getElementById("paused-view");
 const activeView = document.getElementById("active-view");
 const timeBarFill = document.getElementById("time-bar-fill");
+const iconoTimerContainer = document.querySelector(".iconoTimerContainer");
 
 let timerInterval = null;
 
@@ -93,6 +94,7 @@ function TimerController(id) {
         if ((status.isRunning || status.paused) && status.timeLeft > 0) {
             this.pausedView.style.display = "none";
             this.activeView.style.display = "flex";
+            iconoTimerContainer.style.display = "none";
             this.timerDisplay.textContent = this.formatTime(status.timeLeft);
             // Muestra el tiempo total
             if (!this.totalTime || status.totalTime > this.totalTime || !status.isRunning) {
@@ -199,6 +201,11 @@ function notifyIconState() {
         const anyActive = results.some(Boolean);
         // No es necesario enviar mensaje especial, el background ya actualiza el icono
         // Pero si quieres forzar, puedes enviar un mensaje aquí
+
+        // Controla la visibilidad del iconoTimerContainer según si hay temporizadores activos
+        if (!anyActive) {
+            iconoTimerContainer.style.display = "flex";
+        }
     });
 }
 
