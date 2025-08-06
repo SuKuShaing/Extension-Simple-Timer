@@ -20,6 +20,7 @@ Hay un bug, al colocar más de 2, los temporizadores restantes desaparecen
 - [ ] Resolver el bug de desactivación de los temporizadores
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
+- [X] Modificar el CSS para que se vea mejor tiempo y dentro de la barra
 - [x] Colocar en la función notify que ejecute el sonido de finalizado -> <P style="opacity: 0.6;">_MV3 no permite reproducir sonidos desde el service worker (background.js), solo desde el popup.js y cuando el popup.html esté abierto_</P>
 - [x] En la función notify que se envíe a eliminar el temporizador finalizado
 - [x] En la función notify que se envíe a actualizar el icono de la extensión a normal
