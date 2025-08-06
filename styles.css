@@ -25,16 +25,26 @@ section {
 .timeYBar {
 	width: 180px;
 	position: relative;
+<<<<<<< HEAD
 	/* outline: 1px solid #ff0000; */
+=======
+>>>>>>> 9f98b476f7bc9c935d8dba956496030a4cf01b5b
 }
 
 .timer-display {
 	position: absolute;
+<<<<<<< HEAD
+=======
+	margin: auto;
+>>>>>>> 9f98b476f7bc9c935d8dba956496030a4cf01b5b
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	font-size: 18px;
+<<<<<<< HEAD
 	margin: auto;
+=======
+>>>>>>> 9f98b476f7bc9c935d8dba956496030a4cf01b5b
 	color: #fff;
 }
 
