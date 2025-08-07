@@ -55,16 +55,18 @@ section { /* Los timers */
 .timeYBar {
 	width: 180px;
 	position: relative;
+	/* outline: 1px solid red; */
 }
 
 .timer-display {
 	position: absolute;
-	top: 50%;
+	top: 56%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	font-size: 18px;
-	margin: auto;
+	/* margin: auto; */
 	color: #fff;
+	/* outline: 1px solid violet; */
 }
 
 .time-bar {
