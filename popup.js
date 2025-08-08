@@ -187,25 +187,21 @@ function TimerController(id) {
  * Al cargar el DOM, instancia los controladores de los 5 temporizadores
  * para inicializar la interfaz y enlazar los controles.
  */
-// Notifica al background si hay al menos un temporizador activo
+// Controla la visibilidad de `iconoTimerContainer`: solo se muestra cuando
+// no hay ningún temporizador ni corriendo ni pausado (con tiempo restante > 0)
 function notifyIconState() {
-    let checks = [];
+    const checks = [];
     for (let i = 1; i <= 5; i++) {
         checks.push(new Promise(resolve => {
             chrome.runtime.sendMessage({ action: "get_timer_status", id: i }, status => {
-                resolve(!!(status && status.isRunning));
+                const engaged = !!(status && (status.isRunning || status.paused) && status.timeLeft > 0);
+                resolve(engaged);
             });
         }));
     }
     Promise.all(checks).then(results => {
-        const anyActive = results.some(Boolean);
-        // No es necesario enviar mensaje especial, el background ya actualiza el icono
-        // Pero si quieres forzar, puedes enviar un mensaje aquí
-
-        // Controla la visibilidad del iconoTimerContainer según si hay temporizadores activos
-        if (!anyActive) {
-            iconoTimerContainer.style.display = "flex";
-        }
+        const anyEngaged = results.some(Boolean);
+        iconoTimerContainer.style.display = anyEngaged ? "none" : "flex";
     });
 }
 
@@ -213,4 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);
     }
+    // Asegura el estado inicial correcto del contenedor del icono
+    notifyIconState();
 });

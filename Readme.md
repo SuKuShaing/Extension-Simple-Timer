@@ -6,14 +6,25 @@ Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tare
 Disponible en Chrome, Edge, Opera y Brave
 
 
-## Bug de se salió el color del icono del temporizador
+## Bug al pausar
+- Al momento de pausar el temporizador aparece el logo de la extensión por un momento, como un parpadeo y aparece por encima del temporizador y pasa siempre que se pausé un temporizador
+- teniendo dos temporizadores pausados, al momento de resetear un temporizador aparece el logo de la extensión por un momento, como un parpadeo y aparece por encima de los temporizadores y pasa siempre que se resetee un temporizador
+- El error ocurre al tener los demás temporizadores pausados y al momento de pausar otro temporizador y no quedar ninguno corriendo, ahí ocurre el parpadeo, sí hay al menos un temporizador corriendo, no ocurre el parpadeo
+- Al momento de tener pausados los demás temporizadores y darle a reset a uno de ellos, ocurre el parpadeo, reset a otro teniendo todos pausados y vuelve a ocurrir el parpadeo, el tema es cuando están todos pausados, mientras haya uno corriendo, no ocurre el parpadeo
+
+
+
+
+
+## Bug en el cual se salió el color del icono del temporizador
 - al tener 5 temporizadores y sonar la primera notificación, el icono de la extensión se puso en modo normal, sin embargo los temporizadores seguían activos, al abrir el popup se volvió a colocar le icono en modo activo
 - al tener 5 temporizadores y sonaron las primeras 4 notificaciones y el icono de la extensión se puso en modo normal, al abrir el popup se volvió a colocar le icono en modo activo
+- al tener 5 temporizadores, del primero al segundo de 10 min, el icono todo bien, después que terminó ese fallo el color del icono se puso en modo normal, al terminar el de 20 min el icono sigue sin color o en modo normal, al terminar el temporizador de 40 minutos, volvió el color al icono, como debía ser puesto que aún estaba funcionando el siguiente temporizador, al terminar el de 60 minutos, el icono se puso en modo normal
 
 
 
 
-## Bug de desactivación
+## ~~Bug de desactivación~~ van 2 éxitos, al 3ro borro este bug
 Hay un bug, al colocar más de 2, los temporizadores restantes desaparecen
 
 #### Experimentos de cantidad
@@ -26,10 +37,12 @@ Hay un bug, al colocar más de 2, los temporizadores restantes desaparecen
 
 
 ## To Do
+- [ ] Que se puedan ingresar segundos en el input
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
+- [x] Bug al pausar
 - [ ] Resolver el bug de desactivación de los temporizadores cuando habían varios a la vez
-- [X] Modificar el CSS para que se vea mejor tiempo y dentro de la barra
+- [x] Modificar el CSS para que se vea mejor tiempo y dentro de la barra
 - [x] Colocar en la función notify que ejecute el sonido de finalizado -> <P style="opacity: 0.6;">_MV3 no permite reproducir sonidos desde el service worker (background.js), solo desde el popup.js y cuando el popup.html esté abierto_</P>
 - [x] En la función notify que se envíe a eliminar el temporizador finalizado
 - [x] En la función notify que se envíe a actualizar el icono de la extensión a normal
@@ -41,6 +54,7 @@ Hay un bug, al colocar más de 2, los temporizadores restantes desaparecen
 
 #### Versión 1.6 (En desarrollo)
 - Se añade un icono de pausa y reset más bonito
+- Se arregla el bug del parpadeo al pausar y resetear los temporizadores
 
 #### Versión 1.5 (Disponible en Chrome Web Store)
 - Se resuelve el bug de desactivación de los temporizadores, cuando habían más de 2 temporizadores activos
