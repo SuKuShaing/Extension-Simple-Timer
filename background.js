@@ -69,10 +69,9 @@ const stateRestored = new Promise(resolve => {
             saveState();
         }
         
-        // Al restaurar el estado, actualiza el icono según si hay temporizadores activos
-        const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-        updateExtensionIcon(anyActive);
-        console.log('[TIMER DEBUG] Estado restaurado, timers activos:', anyActive);
+        // Al restaurar el estado, recalcula el icono de forma debounced considerando timers y alarmas
+        updateIconDebounced();
+        console.log('[TIMER DEBUG] Estado restaurado, icono recalculado');
         resolve(); // La restauración ha finalizado
     });
 });
@@ -155,9 +154,8 @@ function stopTimer(id) {
     delete timers[id]; // Elimina completamente la entrada
     saveState();
 
-    // Ahora revisa si queda alguno activo y actualiza el icono
-    const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-    updateExtensionIcon(anyActive);
+    // Recalcula el icono de forma debounced (considera timers y alarmas)
+    updateIconDebounced();
 }
 
 /**
@@ -245,9 +243,16 @@ function updateIconDebounced() {
         clearTimeout(iconUpdateTimeout);
     }
     iconUpdateTimeout = setTimeout(() => {
-        const anyActive = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > Date.now());
-        updateExtensionIcon(anyActive);
-        iconUpdateTimeout = null;
+        // Considera timers y alarmas programadas para un estado consistente
+        chrome.alarms.getAll((alarms) => {
+            const now = Date.now();
+            const anyFutureAlarm = (alarms || []).some(a => a.name && a.name.startsWith('timer-') && a.scheduledTime && a.scheduledTime > now);
+            const anyRunning = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > now);
+            const anyPausedPending = Object.values(timers).some(t => t && t.paused && t.endTime && t.pauseTime && (t.endTime - t.pauseTime) > 0);
+            const shouldBeActive = anyFutureAlarm || anyRunning || anyPausedPending;
+            updateExtensionIcon(shouldBeActive);
+            iconUpdateTimeout = null;
+        });
     }, 150);
 }
 
@@ -304,17 +309,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Listener para alarmas de Chrome (notificación final)
 chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name.startsWith('timer-')) {
+    stateRestored.then(() => {
+        if (!alarm.name.startsWith('timer-')) return;
+
         const id = parseInt(alarm.name.split('-')[1], 10);
         console.log(`[TIMER DEBUG] Alarma disparada para timer ${id}`);
-        
-        if (timers[id] && !timers[id].paused) {
+
+        const t = timers[id];
+        if (t && !t.paused) {
             console.log(`[TIMER DEBUG] Notificando timer ${id}`);
-            notify(id, timers[id].originalMinutes);
+            notify(id, t.originalMinutes);
         } else {
             console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
         }
-    }
+    });
 });
-
 
