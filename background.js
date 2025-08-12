@@ -249,7 +249,7 @@ function updateIconDebounced() {
             const anyFutureAlarm = (alarms || []).some(a => a.name && a.name.startsWith('timer-') && a.scheduledTime && a.scheduledTime > now);
             const anyRunning = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > now);
             const anyPausedPending = Object.values(timers).some(t => t && t.paused && t.endTime && t.pauseTime && (t.endTime - t.pauseTime) > 0);
-            const shouldBeActive = anyFutureAlarm || anyRunning || anyPausedPending;
+            const shouldBeActive = anyFutureAlarm || anyRunning;
             updateExtensionIcon(shouldBeActive);
             iconUpdateTimeout = null;
         });

@@ -7,23 +7,18 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## Bug del color del icono
-### Errores nuevos, después de la modificación
-- termina el de 5 minutos y sigue el color, 10 min y sigue el color, 20 y se fué el color, 40 volvió el color al icono, 60 se cambió al icono normal cómo debe ser.
-- se colocarón 5 temporizadores, terminó el de 5 minutos y el color sigue funcionando, terminó el de 10 minutos y el color sigue funcionando, 20 minutos, el color sigue funcionando, a los 40 minutos el color ya no funcionó, se puso en modo normal cuando debía tener el modo activo, a los 60 minutos se quedo en modo normal, que era lo correcto puesto que no había más temporizadores activos.
-- Se colocaron 5 temporizadores, y todo funcionó bien, mientras habían temporizadores activos se mantuvo el color del icono como activado, y al terminar el último temporizador se puso en modo normal.
-
-### Errores previo a la modificación
-- al tener 5 temporizadores y sonar la primera notificación, el icono de la extensión se puso en modo normal, sin embargo los temporizadores seguían activos, al abrir el popup se volvió a colocar le icono en modo activo
-- al tener 5 temporizadores y sonaron las primeras 4 notificaciones y el icono de la extensión se puso en modo normal, al abrir el popup se volvió a colocar le icono en modo activo
-- al tener 5 temporizadores, del primero al segundo de 10 min, el icono todo bien, después que terminó ese fallo el color del icono se puso en modo normal, al terminar el de 20 min el icono sigue sin color o en modo normal, al terminar el temporizador de 40 minutos, volvió el color al icono, como debía ser puesto que aún estaba funcionando el siguiente temporizador, al terminar el de 60 minutos, el icono se puso en modo normal
-
+### Pruebas, después de la 2da modificación
+- __Exitosa__ 5, 10, 20, 40 sigue el color, 60 volvió a normal
+- __Medianamente Exitosa__ 5, 10, 20, 40 sigue el color, 60 volvió a normal | pausé entre 5 y 10 y el color aparece como activado a pesar de que están todos pausados
+- He corroborado que al momento de que uno o varios temporizadores estén pausados, el icono de la extensión sigue en modo activo, cuando por el contrario, al estar pausados el icono debiese estar en modo normal.
 
 ## To Do
 - [ ] Que se puedan ingresar segundos en el input
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
-- [x] Bug al pausar
-- [ ] Solución al bug de que se coloca el icono en modo normal cuando debería estar en modo activo
+- [ ] Bug al pausar no se ve el icono en modo normal, solo en activo
+- [x] Bug al pausar se ve el logo
+- [x] Solución al bug de que se coloca el icono en modo normal cuando debería estar en modo activo
 - [x] Resolver el bug de desactivación de los temporizadores cuando habían varios a la vez
 - [x] Modificar el CSS para que se vea mejor tiempo y dentro de la barra
 - [x] Colocar en la función notify que ejecute el sonido de finalizado -> <P style="opacity: 0.6;">_MV3 no permite reproducir sonidos desde el service worker (background.js), solo desde el popup.js y cuando el popup.html esté abierto_</P>
@@ -38,6 +33,7 @@ Disponible en Chrome, Edge, Opera y Brave
 #### Versión 1.6 (En desarrollo)
 - Se añade un icono de pausa y reset más bonito
 - Se arregla el bug del parpadeo al pausar y resetear los temporizadores
+- Se arregla el bug de que se coloca el icono en modo normal cuando debería estar en modo activo
 
 #### Versión 1.5 (Disponible en Chrome Web Store)
 - Se resuelve el bug de desactivación de los temporizadores, cuando habían más de 2 temporizadores activos
