@@ -7,16 +7,18 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## Bug del color del icono
-### Pruebas, después de la 2da modificación
-- __Exitosa__ 5, 10, 20, 40 sigue el color, 60 volvió a normal
-- __Medianamente Exitosa__ 5, 10, 20, 40 sigue el color, 60 volvió a normal | pausé entre 5 y 10 y el color aparece como activado a pesar de que están todos pausados
-- He corroborado que al momento de que uno o varios temporizadores estén pausados, el icono de la extensión sigue en modo activo, cuando por el contrario, al estar pausados el icono debiese estar en modo normal.
+### Pruebas, después de la 3da modificación
+- __Exitosa__ 5, 10, 20, 40, color sigue, 60 cambió a normal
+- __Exitosa__ 5, 10, 20 sigue el color, pausé y color inactivo como debe ser, 40 color sigue, 60 min cambió a normal como debe ser
+- __Exitosa__ 5, 10, 20, 40 color sigue, 60 cambió a normal
+- __Exitosa__ 5 min sigue el color, pause y icono volvió a normal, 10, 20, 40 min sigue el color, 60 min cambió a normal
+
 
 ## To Do
 - [ ] Que se puedan ingresar segundos en el input
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
-- [ ] Bug al pausar no se ve el icono en modo normal, solo en activo
+- [x] Bug al pausar no se ve el icono en modo normal, solo en activo
 - [x] Bug al pausar se ve el logo
 - [x] Solución al bug de que se coloca el icono en modo normal cuando debería estar en modo activo
 - [x] Resolver el bug de desactivación de los temporizadores cuando habían varios a la vez
@@ -30,12 +32,15 @@ Disponible en Chrome, Edge, Opera y Brave
 
 ### Versiones
 
-#### Versión 1.6 (En desarrollo)
+#### Versión 1.7 (En desarrollo)
 - Se añade un icono de pausa y reset más bonito
-- Se arregla el bug del parpadeo al pausar y resetear los temporizadores
-- Se arregla el bug de que se coloca el icono en modo normal cuando debería estar en modo activo
 
-#### Versión 1.5 (Disponible en Chrome Web Store)
+#### Versión 1.6 (Disponible en Chrome Web Store)
+- Se arregla el bug del parpadeo al pausar y resetear los temporizadores
+- Se arregla el bug de que se coloca el icono en modo activo cuando debería estar en modo normal al pausar
+- Se arregla el bug de que al pausar y resetear los temporizadores, el icono de la extensión se coloca en modo activo
+
+#### Versión 1.5
 - Se resuelve el bug de desactivación de los temporizadores, cuando habían más de 2 temporizadores activos
 - Se añade el icono de la extensión a la parte vacía del popup
 - Se mejora la visualización del tiempo en la barra de tiempo
