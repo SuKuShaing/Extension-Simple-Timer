@@ -6,14 +6,6 @@ Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tare
 Disponible en Chrome, Edge, Opera y Brave
 
 
-## Bug del color del icono
-### Pruebas, después de la 3da modificación
-- __Exitosa__ 5, 10, 20, 40, color sigue, 60 cambió a normal
-- __Exitosa__ 5, 10, 20 sigue el color, pausé y color inactivo como debe ser, 40 color sigue, 60 min cambió a normal como debe ser
-- __Exitosa__ 5, 10, 20, 40 color sigue, 60 cambió a normal
-- __Exitosa__ 5 min sigue el color, pause y icono volvió a normal, 10, 20, 40 min sigue el color, 60 min cambió a normal
-
-
 ## To Do
 - [ ] Que se puedan ingresar segundos en el input
 - [ ] Al darle Enter en el input se debe iniciar el temporizador
