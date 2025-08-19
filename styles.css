@@ -75,6 +75,7 @@ section { /* Los timers */
 	height: 100%; /* 20 px */
 	background-color: #7b7b7b;
 	border-radius: 5px;
+	overflow: hidden;
 }
 
 .time-bar-fill {
