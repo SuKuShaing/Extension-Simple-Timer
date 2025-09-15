@@ -99,6 +99,25 @@ function stopBadgeUpdateAlarms() {
     }
 }
 
+/**
+ * Formatea el tiempo para mostrar en la notificación de manera legible
+ * @param {number} totalMs - Tiempo total en milisegundos
+ * @returns {string} Tiempo formateado para la notificación
+ */
+function formatTimeForNotification(totalMs) {
+    const totalSeconds = Math.round(totalMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    
+    if (minutes === 0) {
+        return `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+    } else if (seconds === 0) {
+        return `${minutes} minuto${minutes !== 1 ? 's' : ''}`;
+    } else {
+        return `${minutes} minuto${minutes !== 1 ? 's' : ''} y ${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+    }
+}
+
 // Al restaurar el estado, reprograma las alarmas si corresponde
 const stateRestored = new Promise(resolve => {
     chrome.storage.local.get('timersState', (data) => {
@@ -129,7 +148,7 @@ const stateRestored = new Promise(resolve => {
                         } else {
                             // Está en el margen de tolerancia, asume que debe notificar ahora
                             console.log(`[TIMER DEBUG] Timer ${id} debe notificar (margen de tolerancia)`);
-                            notify(id, timers[id].originalMinutes);
+                            notify(id, timers[id].totalTime);
                         }
                     } else {
                         // Expiró hace más de 30 segundos, elimina silenciosamente
@@ -192,9 +211,9 @@ function clearState(id) {
  * Muestra una notificación nativa cuando un temporizador finaliza.
  * Detiene el temporizador después de mostrar la notificación.
  * @param {number} id - ID del temporizador que terminó.
- * @param {number} minutos_ingresado - Tiempo ingresado por el usuario.
+ * @param {number} totalTimeMs - Tiempo total en milisegundos.
  */
-function notify(id, minutos_ingresado) {
+function notify(id, totalTimeMs) {
     // Primero detiene el temporizador
     stopTimer(id);
 
@@ -203,12 +222,12 @@ function notify(id, minutos_ingresado) {
     // chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
 
     // Muestra la notificación
-    const displayTime = minutos_ingresado > 0 ? `${minutos_ingresado} minuto(s)` : "el tiempo";
+    const displayTime = totalTimeMs > 0 ? formatTimeForNotification(totalTimeMs) : "el tiempo";
     chrome.notifications.create({
         type: "basic",
         iconUrl: "Iconos/icon128.png",
         title: `¡Tiempo terminado!`,
-        message: `Tu temporizador de ${displayTime} minutos ha finalizado.`,
+        message: `Tu temporizador de ${displayTime} ha finalizado.`,
         priority: 2, // Prioridad alta (0-2)
         requireInteraction: true, // Evita que se oculte automáticamente
         silent: false, // Permite sonido
@@ -404,7 +423,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             const t = timers[id];
             if (t && !t.paused) {
                 console.log(`[TIMER DEBUG] Notificando timer ${id}`);
-                notify(id, t.originalMinutes);
+                notify(id, t.totalTime);
             } else {
                 console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
             }
