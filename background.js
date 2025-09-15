@@ -78,16 +78,52 @@ function startBadgeUpdateAlarms() {
     
     badgeUpdateActive = true;
     
-    // Programa la primera alarma para el próximo minuto
-    const now = Date.now();
-    const nextMinute = Math.ceil(now / 60000) * 60000; // Próximo minuto exacto
-    
+    // Programa la primera alarma inmediatamente para verificar el estado actual
     chrome.alarms.create('badge-update', { 
-        when: nextMinute,
-        periodInMinutes: 1 // Se repite cada minuto
+        when: Date.now() + 1000 // En 1 segundo para verificar inmediatamente
     });
     
     console.log('[TIMER DEBUG] Alarmas de actualización del badge iniciadas');
+}
+
+// Nueva función para programar la próxima actualización del badge
+function scheduleNextBadgeUpdate() {
+    if (!badgeUpdateActive) {
+        return;
+    }
+    
+    // Encuentra el temporizador activo más próximo a cambiar de minuto
+    const now = Date.now();
+    let nextUpdateTime = null;
+    
+    for (let id in timers) {
+        const t = timers[id];
+        if (t && t.endTime) {
+            let timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - now;
+            if (timeLeft > 0) {
+                // Calcula cuándo cambiará el próximo minuto
+                const currentMinutes = Math.ceil(timeLeft / (60 * 1000));
+                const nextMinuteChange = Math.floor(timeLeft / (60 * 1000)) * 60 * 1000;
+                
+                // Si el cambio de minuto es en menos de 5 segundos, espera un poco más
+                const updateDelay = Math.max(1000, nextMinuteChange - now + 500);
+                
+                if (!nextUpdateTime || updateDelay < nextUpdateTime) {
+                    nextUpdateTime = updateDelay;
+                }
+            }
+        }
+    }
+    
+    if (nextUpdateTime) {
+        chrome.alarms.create('badge-update', { 
+            when: now + nextUpdateTime
+        });
+        console.log(`[TIMER DEBUG] Próxima actualización del badge en ${Math.round(nextUpdateTime/1000)}s`);
+    } else {
+        // No hay temporizadores activos, detener las alarmas
+        stopBadgeUpdateAlarms();
+    }
 }
 
 // Nueva función para detener las alarmas de actualización del badge
@@ -431,6 +467,9 @@ chrome.alarms.onAlarm.addListener((alarm) => {
             // Alarma de actualización del badge
             console.log('[TIMER DEBUG] Actualizando badge por alarma');
             updateBadge();
+            
+            // Programa la próxima actualización
+            scheduleNextBadgeUpdate();
         }
     });
 });
