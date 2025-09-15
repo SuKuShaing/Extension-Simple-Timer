@@ -22,7 +22,7 @@ body {
 	height: 120px;
 	position: absolute;
 	top: 30px;
-	right: 15px;
+	right: 14px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -51,7 +51,7 @@ section { /* Los timers */
 /* Timers pausados */
 .paused-view {
 	display: flex;
-	gap: 10px;
+	/* gap: 10px; */
 	/* outline: 1px solid red; */
 }
 
@@ -71,20 +71,22 @@ section { /* Los timers */
 	outline: 1px solid #006ce0;
 }
 
-/* .start-btn { */
+.start-btn {
+	margin-left: 5px;
 	/* flex-shrink: 0; */
 	/* outline: 3px solid green; */
-/* } */
+}
 
 /* Timers activos */
 .active-view {
 	display: flex;
 	flex-direction: row;
-	gap: 10px;
+	gap: 5px;
 }
 
 .timeYBar {
-	width: 180px;
+	/* width: 180px; */
+	width: 100%;
 	position: relative;
 	/* outline: 1px solid red; */
 }
@@ -176,15 +178,21 @@ button:active {
 
 .buttons {
 	display: flex;
-	gap: 10px;
+	gap: 5px;
+	/* background-color: violet; */
+	/* outline: 1px solid red; */
 	/* min-width: 100px; */
 }
 
 svg {
 	position: relative;
-	top: 1px;
+	top: 2px;
 	/* outline: 1px solid red; */
 }
+
+/* .buttons svg {
+	/* top: 2px;
+} */
 
 .play-icon {
 	width: 16px;
