@@ -1,3 +1,7 @@
+* {
+	box-sizing: border-box;
+}
+
 body {
 	display: flex;
 	position: relative;
@@ -10,13 +14,14 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	/* outline: 1px solid blue; */
 }
 
 .iconoTimerContainer {
 	width: 120px;
 	height: 120px;
 	position: absolute;
-	top: 20px;
+	top: 30px;
 	right: 20px;
 	display: flex;
 	flex-direction: column;
@@ -40,13 +45,31 @@ body {
 
 section { /* Los timers */
 	width: 100%;
+	/* outline: 1px solid violet; */
+}
+
+/* Timers pausados */
+.paused-view {
+	display: flex;
+	gap: 10px;
 	/* outline: 1px solid red; */
 }
 
 .time-input {
+	display: inline-block;
 	width: 65px;
+	/* vertical-align: middle; */
+	height: 27px;
+	vertical-align: top;
+	/* outline: 1px solid orange; */
 }
 
+.start-btn {
+	/* flex-shrink: 0; */
+	/* outline: 3px solid green; */
+}
+
+/* Timers activos */
 .active-view {
 	display: flex;
 	flex-direction: row;
@@ -88,5 +111,45 @@ section { /* Los timers */
 .buttons {
 	display: flex;
 	gap: 10px;
-	min-width: 100px;
+	/* min-width: 100px; */
+}
+
+.play-icon {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+}
+
+.pause-icon {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+}
+
+.reset-icon {
+	width: 16px;
+	height: 16px;
+	stroke: currentColor;
+}
+
+button {
+	display: block-inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px 8px;
+	border: none;
+	border-radius: 4px;
+	background-color: #006ce0;
+	color: white;
+	cursor: pointer;
+	font-size: 14px;
+	transition: background-color 0.2s;
+}
+
+button:hover {
+	background-color: #0056b3;
+}
+
+button:active {
+	background-color: #004494;
 }

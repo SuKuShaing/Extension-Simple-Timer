@@ -7,10 +7,10 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## To Do
+- [ ] Colocar Iconos más bonitos en los botones
 - [x] Que muestre el tiempo en el logo cuando tenga un temporizador activo, sí hay dos activos, que muestre el tiempo de los dos, sí hay más que muestre el número de temporizadores activos 3T por ejemplo
 - [x] Que se puedan ingresar segundos en el input
 - [x] Al darle Enter en el input se debe iniciar el temporizador
-- [ ] Colocar Iconos más bonitos en los botones
 - [x] Bug al pausar no se ve el icono en modo normal, solo en activo
 - [x] Bug al pausar se ve el logo
 - [x] Solución al bug de que se coloca el icono en modo normal cuando debería estar en modo activo
