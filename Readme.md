@@ -25,13 +25,13 @@ Disponible en Chrome, Edge, Opera y Brave
 
 ### Versiones
 
-#### Versión 1.7 (En desarrollo)
+#### Versión 1.7 (Disponible en Chrome Web Store)
 - Se añade un icono de inicio, pausa y reset más bonito y se mejora al interfaz en general
 - Se añade un badge a la extensión que muestra la cantidad de temporizadores activos y sí hay uno solo, que muestre el tiempo restante en minutos
 - Ahora se pueden ingresar segundos en el input
 - Ahora al darle Enter en el input se inicia el temporizador
 
-#### Versión 1.6 (Disponible en Chrome Web Store)
+#### Versión 1.6
 - Se arregla el bug del parpadeo al pausar y resetear los temporizadores
 - Se arregla el bug de que se coloca el icono en modo activo cuando debería estar en modo normal al pausar
 - Se arregla el bug de que al pausar y resetear los temporizadores, el icono de la extensión se coloca en modo activo

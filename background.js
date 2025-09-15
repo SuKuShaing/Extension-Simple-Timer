@@ -61,7 +61,7 @@ function updateBadge() {
         startBadgeUpdateAlarms();
     } else {
         // Múltiples temporizadores activos, muestra el número con "T"
-        chrome.action.setBadgeText({ text: `${activeTimers.length}T` });
+        chrome.action.setBadgeText({ text: `${activeTimers.length}-T` });
         chrome.action.setBadgeBackgroundColor({ color: "#7b7b7b" });
         chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
         // Detiene las alarmas de actualización del badge
