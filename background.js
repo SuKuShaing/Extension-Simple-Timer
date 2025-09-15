@@ -10,6 +10,9 @@
 const MAX_TIMERS = 5;
 let timers = {}; // { id: { timer, endTime, paused, pauseTime, totalTime } }
 
+// Variable para controlar si el badge se está actualizando
+let badgeUpdateActive = false;
+
 // Cambia el icono de la extensión según si hay temporizadores activos
 function updateExtensionIcon(isActive) {
     const iconPath = isActive ? {
@@ -24,6 +27,76 @@ function updateExtensionIcon(isActive) {
         128: "Iconos/icon128.png"
     };
     chrome.action.setIcon({ path: iconPath });
+}
+
+// Nueva función para actualizar el badge
+function updateBadge() {
+    const now = Date.now();
+    const activeTimers = [];
+    
+    // Encuentra todos los temporizadores activos (corriendo o pausados con tiempo restante)
+    for (let id in timers) {
+        const t = timers[id];
+        if (t && t.endTime) {
+            let timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - now;
+            if (timeLeft > 0) {
+                activeTimers.push({ id, timeLeft });
+            }
+        }
+    }
+    
+    if (activeTimers.length === 0) {
+        // No hay temporizadores activos, oculta el badge
+        chrome.action.setBadgeText({ text: "" });
+        chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
+        // Detiene las alarmas de actualización del badge
+        stopBadgeUpdateAlarms();
+    } else if (activeTimers.length === 1) {
+        // Un solo temporizador activo, muestra el tiempo restante en minutos
+        const timeLeftMinutes = Math.ceil(activeTimers[0].timeLeft / (60 * 1000));
+        chrome.action.setBadgeText({ text: timeLeftMinutes.toString() });
+        chrome.action.setBadgeBackgroundColor({ color: "#006ce0" });
+        chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
+        // Inicia las alarmas para actualizar cada minuto
+        startBadgeUpdateAlarms();
+    } else {
+        // Múltiples temporizadores activos, muestra el número con "T"
+        chrome.action.setBadgeText({ text: `${activeTimers.length}T` });
+        chrome.action.setBadgeBackgroundColor({ color: "#7b7b7b" });
+        chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
+        // Detiene las alarmas de actualización del badge
+        stopBadgeUpdateAlarms();
+    }
+}
+
+// Nueva función para iniciar las alarmas de actualización del badge
+function startBadgeUpdateAlarms() {
+    // Si ya hay alarmas de badge corriendo, no crear más
+    if (badgeUpdateActive) {
+        return;
+    }
+    
+    badgeUpdateActive = true;
+    
+    // Programa la primera alarma para el próximo minuto
+    const now = Date.now();
+    const nextMinute = Math.ceil(now / 60000) * 60000; // Próximo minuto exacto
+    
+    chrome.alarms.create('badge-update', { 
+        when: nextMinute,
+        periodInMinutes: 1 // Se repite cada minuto
+    });
+    
+    console.log('[TIMER DEBUG] Alarmas de actualización del badge iniciadas');
+}
+
+// Nueva función para detener las alarmas de actualización del badge
+function stopBadgeUpdateAlarms() {
+    if (badgeUpdateActive) {
+        chrome.alarms.clear('badge-update');
+        badgeUpdateActive = false;
+        console.log('[TIMER DEBUG] Alarmas de actualización del badge detenidas');
+    }
 }
 
 // Al restaurar el estado, reprograma las alarmas si corresponde
@@ -71,7 +144,8 @@ const stateRestored = new Promise(resolve => {
         
         // Al restaurar el estado, recalcula el icono de forma debounced considerando timers y alarmas
         updateIconDebounced();
-        console.log('[TIMER DEBUG] Estado restaurado, icono recalculado');
+        updateBadge(); // Actualiza el badge al restaurar el estado
+        console.log('[TIMER DEBUG] Estado restaurado, icono y badge recalculados');
         resolve(); // La restauración ha finalizado
     });
 });
@@ -139,6 +213,9 @@ function notify(id, minutos_ingresado) {
         requireInteraction: true, // Evita que se oculte automáticamente
         silent: false, // Permite sonido
     });
+    
+    // Actualiza el badge después de detener el temporizador
+    updateBadge();
 }
 
 /**
@@ -156,6 +233,7 @@ function stopTimer(id) {
 
     // Recalcula el icono de forma debounced (considera timers y alarmas)
     updateIconDebounced();
+    updateBadge(); // Actualiza el badge
 }
 
 /**
@@ -190,6 +268,9 @@ function startTimer(id, minutes) {
     // Crea la alarma para la notificación final
     chrome.alarms.create(`timer-${id}`, { when: endTime });
     console.log(`[TIMER DEBUG] Timer ${id} iniciado, termina a las ${new Date(endTime).toLocaleTimeString()}`);
+    
+    // Actualiza el badge inmediatamente
+    updateBadge();
 }
 
 /**
@@ -203,6 +284,7 @@ function pauseTimer(id) {
         // Limpia la alarma asociada
         chrome.alarms.clear(`timer-${id}`);
         saveState();
+        updateBadge(); // Actualiza el badge
     }
 }
 
@@ -219,6 +301,7 @@ function resumeTimer(id) {
         saveState();
         // Crea la alarma para el tiempo restante
         chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
+        updateBadge(); // Actualiza el badge
     }
 }
 
@@ -228,6 +311,8 @@ function resumeTimer(id) {
  */
 chrome.runtime.onInstalled.addListener(() => {
     for (let i = 1; i <= MAX_TIMERS; i++) stopTimer(i);
+    // Detiene cualquier alarma de badge que pueda estar corriendo
+    stopBadgeUpdateAlarms();
     console.log("La extensión se ha instalado con éxito");
 });
 
@@ -236,7 +321,7 @@ chrome.runtime.onInstalled.addListener(() => {
  * Gestiona las acciones de temporizador (iniciar, pausar, reanudar, resetear, consultar estado)
  * según el mensaje recibido. Permite la comunicación entre la UI y la lógica de fondo.
  */
-// Debounce para actualización del icono
+// Debounce para actualización del icono y badge
 let iconUpdateTimeout = null;
 function updateIconDebounced() {
     if (iconUpdateTimeout) {
@@ -251,6 +336,7 @@ function updateIconDebounced() {
             const anyPausedPending = Object.values(timers).some(t => t && t.paused && t.endTime && t.pauseTime && (t.endTime - t.pauseTime) > 0);
             const shouldBeActive = anyFutureAlarm || anyRunning;
             updateExtensionIcon(shouldBeActive);
+            updateBadge(); // Actualiza el badge junto con el icono
             iconUpdateTimeout = null;
         });
     }, 150);
@@ -307,20 +393,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
 });
 
-// Listener para alarmas de Chrome (notificación final)
+// Listener para alarmas de Chrome (notificación final y actualización de badge)
 chrome.alarms.onAlarm.addListener((alarm) => {
     stateRestored.then(() => {
-        if (!alarm.name.startsWith('timer-')) return;
+        if (alarm.name.startsWith('timer-')) {
+            // Alarma de temporizador
+            const id = parseInt(alarm.name.split('-')[1], 10);
+            console.log(`[TIMER DEBUG] Alarma disparada para timer ${id}`);
 
-        const id = parseInt(alarm.name.split('-')[1], 10);
-        console.log(`[TIMER DEBUG] Alarma disparada para timer ${id}`);
-
-        const t = timers[id];
-        if (t && !t.paused) {
-            console.log(`[TIMER DEBUG] Notificando timer ${id}`);
-            notify(id, t.originalMinutes);
-        } else {
-            console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
+            const t = timers[id];
+            if (t && !t.paused) {
+                console.log(`[TIMER DEBUG] Notificando timer ${id}`);
+                notify(id, t.originalMinutes);
+            } else {
+                console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
+            }
+        } else if (alarm.name === 'badge-update') {
+            // Alarma de actualización del badge
+            console.log('[TIMER DEBUG] Actualizando badge por alarma');
+            updateBadge();
         }
     });
 });
