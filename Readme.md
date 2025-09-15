@@ -9,7 +9,7 @@ Disponible en Chrome, Edge, Opera y Brave
 ## To Do
 - [x] Que muestre el tiempo en el logo cuando tenga un temporizador activo, sí hay dos activos, que muestre el tiempo de los dos, sí hay más que muestre el número de temporizadores activos 3T por ejemplo
 - [x] Que se puedan ingresar segundos en el input
-- [ ] Al darle Enter en el input se debe iniciar el temporizador
+- [x] Al darle Enter en el input se debe iniciar el temporizador
 - [ ] Colocar Iconos más bonitos en los botones
 - [x] Bug al pausar no se ve el icono en modo normal, solo en activo
 - [x] Bug al pausar se ve el logo
@@ -29,6 +29,7 @@ Disponible en Chrome, Edge, Opera y Brave
 - Se añade un icono de pausa y reset más bonito
 - Se añade un badge a la extensión que muestra la cantidad de temporizadores activos y sí hay uno solo, que muestre el tiempo restante en minutos
 - Ahora se pueden ingresar segundos en el input
+- Ahora al darle Enter en el input se inicia el temporizador
 
 #### Versión 1.6 (Disponible en Chrome Web Store)
 - Se arregla el bug del parpadeo al pausar y resetear los temporizadores

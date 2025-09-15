@@ -139,6 +139,31 @@ function TimerController(id) {
         chrome.storage.local.set({ [`timerInputValue-${id}`]: value });
     });
 
+    // Event listener para la tecla Enter y ejecuta lo mismo que startBtn
+    this.timeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Evitar comportamiento por defecto
+            const inputValue = this.timeInput.value.trim();
+            if (!inputValue) return;
+            
+            const totalMs = parseTimeInput(inputValue);
+            if (totalMs <= 0) return;
+            
+            // Convertir milisegundos a minutos para enviar al background
+            const totalMinutes = totalMs / (60 * 1000);
+            
+            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup (Enter)`);
+            chrome.runtime.sendMessage({ action: "start_timer", minutes: totalMinutes, id: this.id }, (response) => {
+                if (chrome.runtime.lastError) {
+                    console.error(`[TIMER DEBUG] Error iniciando timer ${this.id}:`, chrome.runtime.lastError);
+                    return;
+                }
+                this.pollStatus();
+                setTimeout(notifyIconState, 100);
+            });
+        }
+    });
+
     this.totalTime = null;
     this.timerInterval = null;
 
