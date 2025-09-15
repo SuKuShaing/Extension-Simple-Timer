@@ -5,6 +5,10 @@ Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tare
 [Extensión Disponible aquí](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe),
 Disponible en Chrome, Edge, Opera y Brave
 
+Imagen de la extensión:
+![Imagen de la extensión](./img/1.png)
+![Imagen de la extensión](./img/3.png)
+
 
 ## To Do
 - [x] Colocar Iconos más bonitos en los botones
@@ -69,5 +73,3 @@ Disponible en Chrome, Edge, Opera y Brave
 ### Atribuciones
 
 - Icono y logo de la extensión "[Stopwatch](https://tabler.io/icons/icon/stopwatch)", bajo [Licencia MIT](https://opensource.org/license/mit)
-
-- Sonido "[service-bell](https://soundbible.com/2218-Service-Bell-Help.html)" by Daniel Simion, bajo [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/us/)
