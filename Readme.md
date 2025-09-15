@@ -11,7 +11,7 @@ Imagen de la extensión:
 
 
 ## To Do
-- [ ] que se pueda ingresar ,7 en vez de 0,7
+- [x] que se pueda ingresar ,7 en vez de 0,7
 - [x] Que cada minuto que se despierte para cambiar el badge, verifique cuanto tiempo realmente tiene, ahí cambia el badge y ahí recién programa la alarma para despertar el siguiente minuto
 - [x] Colocar Iconos más bonitos en los botones
 - [x] Que muestre el tiempo en el logo cuando tenga un temporizador activo, sí hay dos activos, que muestre el tiempo de los dos, sí hay más que muestre el número de temporizadores activos 3T por ejemplo
@@ -33,6 +33,7 @@ Imagen de la extensión:
 
 #### Versión 1.8
 - Se corrige el bug de que el badge no se actualizaba con la tiempo correctamente
+- Ahora se acepta ingresar .7 en vez de 0,7
 
 #### Versión 1.7 (Disponible en Chrome Web Store)
 - Se añade un icono de inicio, pausa y reset más bonito y se mejora al interfaz en general

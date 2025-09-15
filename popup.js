@@ -32,16 +32,26 @@ function parseTimeInput(inputValue) {
     // Reemplazar coma por punto para manejo consistente
     const normalizedValue = inputValue.replace(',', '.');
     
-    // Validar formato: número con máximo 2 decimales
-    const regex = /^(\d+)(?:\.(\d{1,2}))?$/;
+    // Validar formato: número con máximo 2 decimales, incluyendo casos que empiecen con punto
+    // Acepta: "1.5", "0.3", ".3", "1", "0", etc.
+    const regex = /^(?:(\d+)(?:\.(\d{1,2}))?|\.(\d{1,2}))$/;
     const match = normalizedValue.match(regex);
     
     if (!match) {
         return 0;
     }
     
-    const wholePart = parseInt(match[1], 10);
-    const decimalPart = match[2] ? match[2] : '0';
+    let wholePart, decimalPart;
+    
+    if (match[1] !== undefined) {
+        // Caso normal: "1.5", "0.3", "1", etc.
+        wholePart = parseInt(match[1], 10);
+        decimalPart = match[2] ? match[2] : '0';
+    } else {
+        // Caso que empieza con punto: ".3", ".45", etc.
+        wholePart = 0;
+        decimalPart = match[3] ? match[3] : '0';
+    }
     
     // Truncar a máximo 2 decimales
     const truncatedDecimal = decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
