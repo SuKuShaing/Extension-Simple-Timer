@@ -7,7 +7,7 @@ Disponible en Chrome, Edge, Opera y Brave
 
 
 ## To Do
-- [ ] Colocar Iconos más bonitos en los botones
+- [x] Colocar Iconos más bonitos en los botones
 - [x] Que muestre el tiempo en el logo cuando tenga un temporizador activo, sí hay dos activos, que muestre el tiempo de los dos, sí hay más que muestre el número de temporizadores activos 3T por ejemplo
 - [x] Que se puedan ingresar segundos en el input
 - [x] Al darle Enter en el input se debe iniciar el temporizador
@@ -26,7 +26,7 @@ Disponible en Chrome, Edge, Opera y Brave
 ### Versiones
 
 #### Versión 1.7 (En desarrollo)
-- Se añade un icono de pausa y reset más bonito
+- Se añade un icono de inicio, pausa y reset más bonito y se mejora al interfaz en general
 - Se añade un badge a la extensión que muestra la cantidad de temporizadores activos y sí hay uno solo, que muestre el tiempo restante en minutos
 - Ahora se pueden ingresar segundos en el input
 - Ahora al darle Enter en el input se inicia el temporizador
