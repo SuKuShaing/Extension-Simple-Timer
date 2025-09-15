@@ -20,6 +20,48 @@ const iconoTimerContainer = document.querySelector(".iconoTimerContainer");
 let timerInterval = null;
 
 /**
+ * Convierte un valor de entrada con decimales a milisegundos totales
+ * @param {string} inputValue - Valor ingresado por el usuario (ej: "1,30", "0,2", "2,9")
+ * @returns {number} Milisegundos totales
+ */
+function parseTimeInput(inputValue) {
+    if (!inputValue || inputValue.trim() === '') {
+        return 0;
+    }
+    
+    // Reemplazar coma por punto para manejo consistente
+    const normalizedValue = inputValue.replace(',', '.');
+    
+    // Validar formato: número con máximo 2 decimales
+    const regex = /^(\d+)(?:\.(\d{1,2}))?$/;
+    const match = normalizedValue.match(regex);
+    
+    if (!match) {
+        return 0;
+    }
+    
+    const wholePart = parseInt(match[1], 10);
+    const decimalPart = match[2] ? match[2] : '0';
+    
+    // Truncar a máximo 2 decimales
+    const truncatedDecimal = decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
+    const decimalValue = parseFloat('0.' + truncatedDecimal);
+    
+    // Aplicar la lógica de conversión
+    let totalSeconds;
+    
+    if (decimalValue <= 0.6) {
+        // Escala de 60: 0.1 = 6 segundos, 0.5 = 30 segundos, 0.6 = 36 segundos
+        totalSeconds = wholePart * 60 + Math.round(decimalValue * 100);
+    } else {
+        // Escala de segundos: 0.7 = 42 segundos, 0.8 = 48 segundos, 0.9 = 54 segundos
+        totalSeconds = wholePart * 60 + Math.round(decimalValue * 60);
+    }
+    
+    return totalSeconds * 1000; // Convertir a milisegundos
+}
+
+/**
  * Formatea un tiempo en milisegundos a formato mm:ss.
  * @param {number} ms - Milisegundos
  * @returns {string} Tiempo formateado
@@ -55,9 +97,9 @@ function TimerController(id) {
      * 
      * Ejemplo de resultado:
      * {
-     *     "timerInputValue-1": "5",
-     *     "timerInputValue-2": "10", 
-     *     "timerInputValue-3": "20",
+     *     "timerInputValue-1": "1,30",
+     *     "timerInputValue-2": "0,2", 
+     *     "timerInputValue-3": "2,9",
      * }
     */
     chrome.storage.local.get([`timerInputValue-${id}`], (result) => {
@@ -66,10 +108,37 @@ function TimerController(id) {
         }
     });
 
-    // Guardar el valor cada vez que el usuario lo cambie
-    this.timeInput.addEventListener('input', () => {
-        chrome.storage.local.set({ [`timerInputValue-${id}`]: this.timeInput.value });
+    // Validación en tiempo real del input
+    this.timeInput.addEventListener('input', (e) => {
+        let value = e.target.value;
+        
+        // Permitir solo números, comas y puntos
+        value = value.replace(/[^0-9,\.]/g, '');
+        
+        // Asegurar que solo haya una coma o punto
+        const commaIndex = value.indexOf(',');
+        const dotIndex = value.indexOf('.');
+        
+        if (commaIndex !== -1 && dotIndex !== -1) {
+            // Si hay ambos, mantener solo el primero
+            if (commaIndex < dotIndex) {
+                value = value.substring(0, dotIndex) + value.substring(dotIndex + 1);
+            } else {
+                value = value.substring(0, commaIndex) + value.substring(commaIndex + 1);
+            }
+        }
+        
+        // Limitar a 2 decimales
+        const parts = value.split(/[,\.]/);
+        if (parts.length > 1 && parts[1].length > 2) {
+            parts[1] = parts[1].substring(0, 2);
+            value = parts.join(',');
+        }
+        
+        e.target.value = value;
+        chrome.storage.local.set({ [`timerInputValue-${id}`]: value });
     });
+
     this.totalTime = null;
     this.timerInterval = null;
 
@@ -141,11 +210,17 @@ function TimerController(id) {
 
     if (this.startBtn) {
         this.startBtn.addEventListener("click", () => {
-            const minutes = parseInt(this.timeInput.value, 10);
-            if (!minutes || minutes <= 0) return;
+            const inputValue = this.timeInput.value.trim();
+            if (!inputValue) return;
             
-            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} por ${minutes} minutos desde popup`);
-            chrome.runtime.sendMessage({ action: "start_timer", minutes, id: this.id }, (response) => {
+            const totalMs = parseTimeInput(inputValue);
+            if (totalMs <= 0) return;
+            
+            // Convertir milisegundos a minutos para enviar al background
+            const totalMinutes = totalMs / (60 * 1000);
+            
+            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup`);
+            chrome.runtime.sendMessage({ action: "start_timer", minutes: totalMinutes, id: this.id }, (response) => {
                 if (chrome.runtime.lastError) {
                     console.error(`[TIMER DEBUG] Error iniciando timer ${this.id}:`, chrome.runtime.lastError);
                     return;

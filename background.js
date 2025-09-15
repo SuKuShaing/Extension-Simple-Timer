@@ -240,7 +240,7 @@ function stopTimer(id) {
  * Inicia un temporizador con la duración indicada (en minutos) y lo registra en el estado.
  * Si ya existe uno con el mismo ID, lo reinicia.
  * @param {number} id - ID del temporizador.
- * @param {number} minutes - Duración en minutos.
+ * @param {number} minutes - Duración en minutos (puede ser decimal).
  */
 function startTimer(id, minutes) {
     console.log(`[TIMER DEBUG] Iniciando timer ${id} por ${minutes} minutos`);
@@ -251,7 +251,7 @@ function startTimer(id, minutes) {
     }
     
     const now = Date.now();
-    const totalTime = minutes * 60 * 1000;
+    const totalTime = minutes * 60 * 1000; // Convertir minutos a milisegundos
     const endTime = now + totalTime;
     
     timers[id] = {
