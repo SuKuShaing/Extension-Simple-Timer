@@ -5,10 +5,13 @@ Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tare
 [Extensión Disponible aquí](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
 Disponible en Chrome, Edge, Opera y Brave
 
-Imagen de la extensión:
+Imagen de la nueva versión de la interfaz de la extensión:
 ![Imagen de la extensión](./img/1.png)
 ![Imagen de la extensión](./img/3.png)
 
+## Creada por: 
+[Sebastián Sanhueza Tapia](https://www.linkedin.com/in/sebastiansanhuezatapia/)
+[Repositorio aquí](https://github.com/SuKuShaing/Extension-Simple-Timer)
 
 ## To Do
 - [x] que se pueda ingresar ,7 en vez de 0,7
@@ -33,7 +36,7 @@ Imagen de la extensión:
 
 #### Versión 1.8
 - Se corrige el bug de que el badge no se actualizaba con la tiempo correctamente
-- Ahora se acepta ingresar .7 en vez de 0,7
+- Ahora se acepta ingresar .7 y 0,7 a la vez
 
 #### Versión 1.7 (Disponible en Chrome Web Store)
 - Se añade un icono de inicio, pausa y reset más bonito y se mejora al interfaz en general
