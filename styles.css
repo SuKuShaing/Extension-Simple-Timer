@@ -1,3 +1,18 @@
+:root {
+	--Azul-claro-1: hsl(from var(--Azul-primario) h s calc(l + 50));
+	--Azul-primario: #006ce0;
+	--Azul-oscuro-1: hsl(from var(--Azul-primario) h s calc(l - 10));
+	--Azul-oscuro-2: hsl(from var(--Azul-primario) h s calc(l - 20));
+
+	--Verde-primario: #11ae00;
+	--Verde-oscuro-1: hsl(from var(--Verde-primario) h s calc(l - 10));
+	--Verde-oscuro-2: hsl(from var(--Verde-primario) h s calc(l - 20));
+
+	--Rojo-primario: #c70000;
+	--Rojo-oscuro-1: hsl(from var(--Rojo-primario) h s calc(l - 10));
+	--Rojo-oscuro-2: hsl(from var(--Rojo-primario) h s calc(l - 20));
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -62,13 +77,13 @@ section { /* Los timers */
 	vertical-align: top;
 	border: none;
 	border-radius: 6px;
-	background-color: #d5e5ff;
+	background-color: var(--Azul-claro-1);
 	padding: 0 5px;
 	/* outline: 1px solid orange; */
 }
 
 .time-input:focus {
-	outline: 1px solid #006ce0;
+	outline: 1px solid var(--Azul-primario);
 }
 
 .start-btn {
@@ -113,7 +128,7 @@ section { /* Los timers */
 .time-bar-fill {
 	width: 0;
 	height: 100%; /* 20 px */
-	background-color: #006ce0;
+	background-color: var(--Azul-primario);
 	border-radius: 6px;
 }
 
@@ -124,7 +139,7 @@ button {
 	padding: 4px 8px;
 	border: none;
 	border-radius: 6px;
-	background-color: #006ce0;
+	background-color: var(--Azul-primario);
 	color: white;
 	cursor: pointer;
 	font-size: 14px;
@@ -132,47 +147,47 @@ button {
 }
 
 button:focus {
-	outline: 1px solid #004494;
+	outline: 1px solid var(--Azul-oscuro-2);
 }
 
 button:hover {
-	background-color: #0056b3;
+	background-color: var(--Azul-oscuro-1);
 }
 
 button:active {
-	background-color: #004494;
+	background-color: var(--Azul-oscuro-2);
 }
 
 .start-btn {
-	background-color: #11ae00;
+	background-color: var(--Verde-primario);
 }
 
 .start-btn:focus {
-	outline: 1px solid #0d7300;
+	outline: 1px solid var(--Verde-oscuro-2);
 }
 
 .start-btn:hover {
-	background-color: #118a00;
+	background-color: var(--Verde-oscuro-1);
 }
 
 .start-btn:active {
-	background-color: #0d7300;
+	background-color: var(--Verde-oscuro-2);
 }
 
 .reset-btn {
-	background-color: #ae0000;
+	background-color: var(--Rojo-primario);
 }
 
 .reset-btn:focus {
-	outline: 1px solid #730000;
+	outline: 1px solid var(--Rojo-oscuro-2);
 }
 
 .reset-btn:hover {
-	background-color: #8a0000;
+	background-color: var(--Rojo-oscuro-1);
 }
 
 .reset-btn:active {
-	background-color: #730000;
+	background-color: var(--Rojo-oscuro-2);
 }
 
 
