@@ -1,16 +1,19 @@
 :root {
 	--Azul-claro-1: hsl(from var(--Azul-primario) h s calc(l + 50));
 	--Azul-primario: #006ce0;
-	--Azul-oscuro-1: hsl(from var(--Azul-primario) h s calc(l - 10));
-	--Azul-oscuro-2: hsl(from var(--Azul-primario) h s calc(l - 20));
+	--Azul-oscuro-1: hsl(from var(--Azul-primario) h s calc(l - 7));
+	--Azul-oscuro-2: hsl(from var(--Azul-primario) h s calc(l - 14));
 
 	--Verde-primario: #11ae00;
-	--Verde-oscuro-1: hsl(from var(--Verde-primario) h s calc(l - 10));
-	--Verde-oscuro-2: hsl(from var(--Verde-primario) h s calc(l - 20));
+	--Verde-oscuro-1: hsl(from var(--Verde-primario) h s calc(l - 7));
+	--Verde-oscuro-2: hsl(from var(--Verde-primario) h s calc(l - 14));
 
 	--Rojo-primario: #c70000;
-	--Rojo-oscuro-1: hsl(from var(--Rojo-primario) h s calc(l - 10));
-	--Rojo-oscuro-2: hsl(from var(--Rojo-primario) h s calc(l - 20));
+	--Rojo-oscuro-1: hsl(from var(--Rojo-primario) h s calc(l - 7));
+	--Rojo-oscuro-2: hsl(from var(--Rojo-primario) h s calc(l - 14));
+
+	--Gris-fondo: #7b7b7b;
+	--Blanco: #ffffff;
 }
 
 * {
@@ -113,14 +116,14 @@ section { /* Los timers */
 	transform: translate(-50%, -50%);
 	font-size: 18px;
 	/* margin: auto; */
-	color: #fff;
+	color: var(--Blanco);
 	/* outline: 1px solid violet; */
 }
 
 .time-bar {
 	width: 100%;
 	height: 100%; /* 20 px */
-	background-color: #7b7b7b;
+	background-color: var(--Gris-fondo);
 	border-radius: 6px;
 	overflow: hidden;
 }
@@ -140,7 +143,7 @@ button {
 	border: none;
 	border-radius: 6px;
 	background-color: var(--Azul-primario);
-	color: white;
+	color: var(--Blanco);
 	cursor: pointer;
 	font-size: 14px;
 	transition: background-color 0.2s;
