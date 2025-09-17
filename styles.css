@@ -209,19 +209,7 @@ svg {
 	/* top: 2px;
 } */
 
-.play-icon {
-	width: 16px;
-	height: 16px;
-	stroke: currentColor;
-}
-
-.pause-icon {
-	width: 16px;
-	height: 16px;
-	stroke: currentColor;
-}
-
-.reset-icon {
+.svg-icon {
 	width: 16px;
 	height: 16px;
 	stroke: currentColor;

@@ -37,6 +37,7 @@ Imagen de la nueva versión de la interfaz de la extensión:
 #### Versión 1.8
 - Se corrige el bug de que el badge no se actualizaba con la tiempo correctamente
 - Ahora se acepta ingresar .7 y 0,7 a la vez
+- Se añaden colores relativos con el sistema hsl
 
 #### Versión 1.7 (Disponible en Chrome Web Store)
 - Se añade un icono de inicio, pausa y reset más bonito y se mejora al interfaz en general
