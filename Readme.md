@@ -9,11 +9,15 @@ Imagen de la nueva versión de la interfaz de la extensión:
 ![Imagen de la extensión](./img/1.png)
 ![Imagen de la extensión](./img/3.png)
 
-## Creada por: 
+## Creada por:
 [Sebastián Sanhueza Tapia](https://www.linkedin.com/in/sebastiansanhuezatapia/)
 [Repositorio aquí](https://github.com/SuKuShaing/Extension-Simple-Timer)
 
 ## To Do
+- [ ] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
+- [ ] Que todo el temporizador se coloque en azul y no solo la tapa al momento de estar activo
+- [ ] Que cuando el tiempo esté encendido hayan unas lineas diagonales más claras que se muevan para mostrar el avance del tiempo
+- [ ] que al momento de pausar el color del budge sea un gris o un azul más oscuro
 - [x] que se pueda ingresar ,7 en vez de 0,7
 - [x] Que cada minuto que se despierte para cambiar el badge, verifique cuanto tiempo realmente tiene, ahí cambia el badge y ahí recién programa la alarma para despertar el siguiente minuto
 - [x] Colocar Iconos más bonitos en los botones
