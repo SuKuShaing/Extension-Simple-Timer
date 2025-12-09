@@ -25,41 +25,42 @@ let timerInterval = null;
  * @returns {number} Milisegundos totales
  */
 function parseTimeInput(inputValue) {
-    if (!inputValue || inputValue.trim() === '') {
+    if (!inputValue || inputValue.trim() === "") {
         return 0;
     }
-    
+
     // Reemplazar coma por punto para manejo consistente
-    const normalizedValue = inputValue.replace(',', '.');
-    
+    const normalizedValue = inputValue.replace(",", ".");
+
     // Validar formato: número con máximo 2 decimales, incluyendo casos que empiecen con punto
     // Acepta: "1.5", "0.3", ".3", "1", "0", etc.
     const regex = /^(?:(\d+)(?:\.(\d{1,2}))?|\.(\d{1,2}))$/;
     const match = normalizedValue.match(regex);
-    
+
     if (!match) {
         return 0;
     }
-    
+
     let wholePart, decimalPart;
-    
+
     if (match[1] !== undefined) {
         // Caso normal: "1.5", "0.3", "1", etc.
         wholePart = parseInt(match[1], 10);
-        decimalPart = match[2] ? match[2] : '0';
+        decimalPart = match[2] ? match[2] : "0";
     } else {
         // Caso que empieza con punto: ".3", ".45", etc.
         wholePart = 0;
-        decimalPart = match[3] ? match[3] : '0';
+        decimalPart = match[3] ? match[3] : "0";
     }
-    
+
     // Truncar a máximo 2 decimales
-    const truncatedDecimal = decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
-    const decimalValue = parseFloat('0.' + truncatedDecimal);
-    
+    const truncatedDecimal =
+        decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
+    const decimalValue = parseFloat("0." + truncatedDecimal);
+
     // Aplicar la lógica de conversión
     let totalSeconds;
-    
+
     if (decimalValue <= 0.6) {
         // Escala de 60: 0.1 = 6 segundos, 0.5 = 30 segundos, 0.6 = 36 segundos
         totalSeconds = wholePart * 60 + Math.round(decimalValue * 100);
@@ -67,7 +68,7 @@ function parseTimeInput(inputValue) {
         // Escala de segundos: 0.7 = 42 segundos, 0.8 = 48 segundos, 0.9 = 54 segundos
         totalSeconds = wholePart * 60 + Math.round(decimalValue * 60);
     }
-    
+
     return totalSeconds * 1000; // Convertir a milisegundos
 }
 
@@ -80,7 +81,9 @@ function formatTime(ms) {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
 }
 
 /**
@@ -104,14 +107,14 @@ function TimerController(id) {
     /**
      * Restaurar el último valor ingresado en el input por el usuario cuando se abre el popup
      * y lo coloca en el input.value
-     * 
+     *
      * Ejemplo de resultado:
      * {
      *     "timerInputValue-1": "1,30",
-     *     "timerInputValue-2": "0,2", 
+     *     "timerInputValue-2": "0,2",
      *     "timerInputValue-3": "2,9",
      * }
-    */
+     */
     chrome.storage.local.get([`timerInputValue-${id}`], (result) => {
         if (result[`timerInputValue-${id}`] !== undefined) {
             this.timeInput.value = result[`timerInputValue-${id}`];
@@ -119,58 +122,70 @@ function TimerController(id) {
     });
 
     // Validación en tiempo real del input
-    this.timeInput.addEventListener('input', (e) => {
+    this.timeInput.addEventListener("input", (e) => {
         let value = e.target.value;
-        
+
         // Permitir solo números, comas y puntos
-        value = value.replace(/[^0-9,\.]/g, '');
-        
+        value = value.replace(/[^0-9,\.]/g, "");
+
         // Asegurar que solo haya una coma o punto
-        const commaIndex = value.indexOf(',');
-        const dotIndex = value.indexOf('.');
-        
+        const commaIndex = value.indexOf(",");
+        const dotIndex = value.indexOf(".");
+
         if (commaIndex !== -1 && dotIndex !== -1) {
             // Si hay ambos, mantener solo el primero
             if (commaIndex < dotIndex) {
-                value = value.substring(0, dotIndex) + value.substring(dotIndex + 1);
+                value =
+                    value.substring(0, dotIndex) +
+                    value.substring(dotIndex + 1);
             } else {
-                value = value.substring(0, commaIndex) + value.substring(commaIndex + 1);
+                value =
+                    value.substring(0, commaIndex) +
+                    value.substring(commaIndex + 1);
             }
         }
-        
+
         // Limitar a 2 decimales
         const parts = value.split(/[,\.]/);
         if (parts.length > 1 && parts[1].length > 2) {
             parts[1] = parts[1].substring(0, 2);
-            value = parts.join(',');
+            value = parts.join(",");
         }
-        
+
         e.target.value = value;
         chrome.storage.local.set({ [`timerInputValue-${id}`]: value });
     });
 
     // Event listener para la tecla Enter y ejecuta lo mismo que startBtn
-    this.timeInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
+    this.timeInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
             e.preventDefault(); // Evitar comportamiento por defecto
             const inputValue = this.timeInput.value.trim();
             if (!inputValue) return;
-            
+
             const totalMs = parseTimeInput(inputValue);
             if (totalMs <= 0) return;
-            
+
             // Convertir milisegundos a minutos para enviar al background
             const totalMinutes = totalMs / (60 * 1000);
-            
-            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup (Enter)`);
-            chrome.runtime.sendMessage({ action: "start_timer", minutes: totalMinutes, id: this.id }, (response) => {
-                if (chrome.runtime.lastError) {
-                    console.error(`[TIMER DEBUG] Error iniciando timer ${this.id}:`, chrome.runtime.lastError);
-                    return;
+
+            console.log(
+                `[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup (Enter)`
+            );
+            chrome.runtime.sendMessage(
+                { action: "start_timer", minutes: totalMinutes, id: this.id },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.error(
+                            `[TIMER DEBUG] Error iniciando timer ${this.id}:`,
+                            chrome.runtime.lastError
+                        );
+                        return;
+                    }
+                    this.pollStatus();
+                    setTimeout(notifyIconState, 100);
                 }
-                this.pollStatus();
-                setTimeout(notifyIconState, 100);
-            });
+            );
         }
     });
 
@@ -182,11 +197,13 @@ function TimerController(id) {
      * @param {number} ms - Milisegundos
      * @returns {string} Tiempo formateado en formato mm:ss para el display del temporizador
      */
-    this.formatTime = function(ms) {
+    this.formatTime = function (ms) {
         const totalSeconds = Math.ceil(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return `${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
     };
 
     /**
@@ -201,18 +218,31 @@ function TimerController(id) {
             iconoTimerContainer.style.display = "none";
             this.timerDisplay.textContent = this.formatTime(status.timeLeft);
             // Muestra el tiempo total
-            if (!this.totalTime || status.totalTime > this.totalTime || !status.isRunning) {
-                this.totalTime = (status.totalTime && status.totalTime > 0) ? status.totalTime : status.timeLeft;
+            if (
+                !this.totalTime ||
+                status.totalTime > this.totalTime ||
+                !status.isRunning
+            ) {
+                this.totalTime =
+                    status.totalTime && status.totalTime > 0
+                        ? status.totalTime
+                        : status.timeLeft;
             }
             // Calcula el progreso de la barra de tiempo
-            let progress = (this.totalTime > 0) ? (status.timeLeft / this.totalTime) * 100 : 100;
+            let progress =
+                this.totalTime > 0
+                    ? (status.timeLeft / this.totalTime) * 100
+                    : 100;
+
             this.timeBarFill.style.width = `${progress}%`;
             if (status.paused) {
                 this.pauseBtn.style.display = "none";
                 this.resumeBtn.style.display = "inline-block";
+                this.timeBarFill.classList.remove("running-stripes");
             } else {
                 this.pauseBtn.style.display = "inline-block";
                 this.resumeBtn.style.display = "none";
+                this.timeBarFill.classList.add("running-stripes");
             }
         } else {
             this.pausedView.style.display = "block";
@@ -228,65 +258,91 @@ function TimerController(id) {
      * para mantener la UI sincronizada en tiempo real.
      */
     this.pollStatus = () => {
-        chrome.runtime.sendMessage({ action: "get_timer_status", id: this.id }, (status) => {
-            if (chrome.runtime.lastError) {
-                console.error(`[TIMER DEBUG] Error obteniendo estado del timer ${this.id}:`, chrome.runtime.lastError);
-                return;
+        chrome.runtime.sendMessage(
+            { action: "get_timer_status", id: this.id },
+            (status) => {
+                if (chrome.runtime.lastError) {
+                    console.error(
+                        `[TIMER DEBUG] Error obteniendo estado del timer ${this.id}:`,
+                        chrome.runtime.lastError
+                    );
+                    return;
+                }
+
+                this.updateUI(status);
+                if (
+                    (status.isRunning || status.paused) &&
+                    status.timeLeft > 0
+                ) {
+                    this.timerInterval = setTimeout(this.pollStatus, 1000);
+                } else {
+                    this.timerInterval = null;
+                }
             }
-            
-            this.updateUI(status);
-            if ((status.isRunning || status.paused) && status.timeLeft > 0) {
-                this.timerInterval = setTimeout(this.pollStatus, 1000);
-            } else {
-                this.timerInterval = null;
-            }
-        });
+        );
     };
 
     if (this.startBtn) {
         this.startBtn.addEventListener("click", () => {
             const inputValue = this.timeInput.value.trim();
             if (!inputValue) return;
-            
+
             const totalMs = parseTimeInput(inputValue);
             if (totalMs <= 0) return;
-            
+
             // Convertir milisegundos a minutos para enviar al background
             const totalMinutes = totalMs / (60 * 1000);
-            
-            console.log(`[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup`);
-            chrome.runtime.sendMessage({ action: "start_timer", minutes: totalMinutes, id: this.id }, (response) => {
-                if (chrome.runtime.lastError) {
-                    console.error(`[TIMER DEBUG] Error iniciando timer ${this.id}:`, chrome.runtime.lastError);
-                    return;
+
+            console.log(
+                `[TIMER DEBUG] Iniciando timer ${this.id} con input "${inputValue}" -> ${totalMs}ms (${totalMinutes} minutos) desde popup`
+            );
+            chrome.runtime.sendMessage(
+                { action: "start_timer", minutes: totalMinutes, id: this.id },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.error(
+                            `[TIMER DEBUG] Error iniciando timer ${this.id}:`,
+                            chrome.runtime.lastError
+                        );
+                        return;
+                    }
+                    this.pollStatus();
+                    setTimeout(notifyIconState, 100);
                 }
-                this.pollStatus();
-                setTimeout(notifyIconState, 100);
-            });
+            );
         });
     }
     if (this.pauseBtn) {
         this.pauseBtn.addEventListener("click", () => {
-            chrome.runtime.sendMessage({ action: "pause_timer", id: this.id }, () => {
-                this.pollStatus();
-                setTimeout(notifyIconState, 100);
-            });
+            chrome.runtime.sendMessage(
+                { action: "pause_timer", id: this.id },
+                () => {
+                    this.pollStatus();
+                    setTimeout(notifyIconState, 100);
+                }
+            );
         });
     }
     if (this.resumeBtn) {
         this.resumeBtn.addEventListener("click", () => {
-            chrome.runtime.sendMessage({ action: "resume_timer", id: this.id }, () => {
-                this.pollStatus();
-                setTimeout(notifyIconState, 100);
-            });
+            chrome.runtime.sendMessage(
+                { action: "resume_timer", id: this.id },
+                () => {
+                    this.pollStatus();
+                    setTimeout(notifyIconState, 100);
+                }
+            );
         });
     }
     if (this.resetBtn) {
         this.resetBtn.addEventListener("click", () => {
-            chrome.runtime.sendMessage({ action: "reset_timer", id: this.id }, () => {
-                this.pollStatus();
-                setTimeout(notifyIconState, 100);
-            });
+            chrome.runtime.sendMessage(
+                { action: "reset_timer", id: this.id },
+                () => {
+                    this.pollStatus();
+                    setTimeout(notifyIconState, 100);
+                }
+            );
         });
     }
     // Al abrir el popup, consulta el estado del temporizador
@@ -302,20 +358,29 @@ function TimerController(id) {
 function notifyIconState() {
     const checks = [];
     for (let i = 1; i <= 5; i++) {
-        checks.push(new Promise(resolve => {
-            chrome.runtime.sendMessage({ action: "get_timer_status", id: i }, status => {
-                const engaged = !!(status && (status.isRunning || status.paused) && status.timeLeft > 0);
-                resolve(engaged);
-            });
-        }));
+        checks.push(
+            new Promise((resolve) => {
+                chrome.runtime.sendMessage(
+                    { action: "get_timer_status", id: i },
+                    (status) => {
+                        const engaged = !!(
+                            status &&
+                            (status.isRunning || status.paused) &&
+                            status.timeLeft > 0
+                        );
+                        resolve(engaged);
+                    }
+                );
+            })
+        );
     }
-    Promise.all(checks).then(results => {
+    Promise.all(checks).then((results) => {
         const anyEngaged = results.some(Boolean);
         iconoTimerContainer.style.display = anyEngaged ? "none" : "flex";
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);
     }

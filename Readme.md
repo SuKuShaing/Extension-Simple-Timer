@@ -16,9 +16,9 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
--   [ ] Que todo el temporizador se coloque en azul y no solo la tapa al momento de estar activo
--   [ ] Que cuando el tiempo esté encendido hayan unas lineas diagonales más claras que se muevan para mostrar el avance del tiempo
+-   [x] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
+-   [x] Que todo el temporizador se coloque en azul y no solo la tapa al momento de estar activo
+-   [x] Que cuando el tiempo esté encendido hayan unas lineas diagonales más claras que se muevan para mostrar el avance del tiempo
 -   [x] Que al momento de pausar el color del budge sea un gris #7b7b7b
 -   [x] que se pueda ingresar ,7 en vez de 0,7
 -   [x] Que cada minuto que se despierte para cambiar el badge, verifique cuanto tiempo realmente tiene, ahí cambia el badge y ahí recién programa la alarma para despertar el siguiente minuto
@@ -43,6 +43,9 @@ Imagen de la nueva versión de la interfaz de la extensión:
 #### Versión 1.9
 
 -   Se cambia el funcionamiento del badge, ahora se marca bien el comportamiento entre pausado y activo
+-   Ahora el logo del temporizador tiene una mejor apariencia en temas claros
+-   Ahora el logo del temporizador muestra claramente cuando está activo o pausado
+-   Se añaden lineas diagonales que se mueven para mostrar el avance del tiempo
 
 #### Versión 1.8 (Disponible en Chrome Web Store)
 
