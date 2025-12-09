@@ -40,14 +40,14 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ### Versiones
 
-#### Versión 1.9
+#### Versión 1.9 (Disponible en Chrome Web Store)
 
 -   Se cambia el funcionamiento del badge, ahora se marca bien el comportamiento entre pausado y activo
 -   Ahora el logo del temporizador tiene una mejor apariencia en temas claros
 -   Ahora el logo del temporizador muestra claramente cuando está activo o pausado
 -   Se añaden lineas diagonales que se mueven para mostrar el avance del tiempo
 
-#### Versión 1.8 (Disponible en Chrome Web Store)
+#### Versión 1.8
 
 -   Se corrige el bug de que el badge no se actualizaba con la tiempo correctamente
 -   Ahora se acepta ingresar .7 y 0,7 a la vez

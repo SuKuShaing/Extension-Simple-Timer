@@ -4,10 +4,10 @@
     "version": "1.9",
     "description": "a Simple Timer",
     "icons": {
-        "16": "./Iconos/icon16.png",
-        "32": "./Iconos/icon32.png",
-        "48": "./Iconos/icon48.png",
-        "128": "./Iconos/icon128.png"
+        "16": "Iconos/icon16.png",
+        "32": "Iconos/icon32.png",
+        "48": "Iconos/icon48.png",
+        "128": "Iconos/icon128.png"
     },
     "action": {
         "default_popup": "popup.html",
