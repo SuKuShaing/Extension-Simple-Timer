@@ -13,6 +13,7 @@
 	--Rojo-oscuro-2: hsl(from var(--Rojo-primario) h s calc(l - 14));
 
 	--Gris-fondo: #7b7b7b;
+	--Gris-letras: #474747;
 	--Blanco: #ffffff;
 }
 
@@ -243,4 +244,8 @@ svg {
 	width: 16px;
 	height: 16px;
 	stroke: currentColor;
+}
+
+h1 {
+	color: var(--Gris-letras);
 }
