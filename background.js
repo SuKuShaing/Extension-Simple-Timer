@@ -15,17 +15,19 @@ let badgeUpdateActive = false;
 
 // Cambia el icono de la extensión según si hay temporizadores activos
 function updateExtensionIcon(isActive) {
-    const iconPath = isActive ? {
-        16: "Iconos/icon_active16.png",
-        32: "Iconos/icon_active32.png",
-        48: "Iconos/icon_active48.png",
-        128: "Iconos/icon_active128.png"
-    } : {
-        16: "Iconos/icon16.png",
-        32: "Iconos/icon32.png",
-        48: "Iconos/icon48.png",
-        128: "Iconos/icon128.png"
-    };
+    const iconPath = isActive
+        ? {
+              16: "Iconos/icon_active16.png",
+              32: "Iconos/icon_active32.png",
+              48: "Iconos/icon_active48.png",
+              128: "Iconos/icon_active128.png",
+          }
+        : {
+              16: "Iconos/icon16.png",
+              32: "Iconos/icon32.png",
+              48: "Iconos/icon48.png",
+              128: "Iconos/icon128.png",
+          };
     chrome.action.setIcon({ path: iconPath });
 }
 
@@ -33,39 +35,50 @@ function updateExtensionIcon(isActive) {
 function updateBadge() {
     const now = Date.now();
     const activeTimers = [];
-    
+
     // Encuentra todos los temporizadores activos (corriendo o pausados con tiempo restante)
     for (let id in timers) {
         const t = timers[id];
         if (t && t.endTime) {
-            let timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - now;
+            let timeLeft =
+                t.paused && t.pauseTime
+                    ? t.endTime - t.pauseTime
+                    : t.endTime - now;
             if (timeLeft > 0) {
-                activeTimers.push({ id, timeLeft });
+                activeTimers.push({ id, timeLeft, paused: t.paused });
             }
         }
     }
-    
+
     if (activeTimers.length === 0) {
         // No hay temporizadores activos, oculta el badge
         chrome.action.setBadgeText({ text: "" });
         chrome.action.setBadgeBackgroundColor({ color: "#4CAF50" });
         // Detiene las alarmas de actualización del badge
         stopBadgeUpdateAlarms();
-    } else if (activeTimers.length === 1) {
-        // Un solo temporizador activo, muestra el tiempo restante en minutos
-        const timeLeftMinutes = Math.ceil(activeTimers[0].timeLeft / (60 * 1000));
-        chrome.action.setBadgeText({ text: timeLeftMinutes.toString() });
-        chrome.action.setBadgeBackgroundColor({ color: "#006ce0" });
-        chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
-        // Inicia las alarmas para actualizar cada minuto
-        startBadgeUpdateAlarms();
     } else {
-        // Múltiples temporizadores activos, muestra el número con "T"
-        chrome.action.setBadgeText({ text: `${activeTimers.length}-T` });
-        chrome.action.setBadgeBackgroundColor({ color: "#7b7b7b" });
-        chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
-        // Detiene las alarmas de actualización del badge
-        stopBadgeUpdateAlarms();
+        // Determina el color del badge: Azul si alguno corre, Gris si todos pausados
+        const anyRunning = activeTimers.some((t) => !t.paused);
+        const badgeColor = anyRunning ? "#006ce0" : "#7b7b7b";
+
+        if (activeTimers.length === 1) {
+            // Un solo temporizador activo, muestra el tiempo restante en minutos
+            const timeLeftMinutes = Math.ceil(
+                activeTimers[0].timeLeft / (60 * 1000)
+            );
+            chrome.action.setBadgeText({ text: timeLeftMinutes.toString() });
+            chrome.action.setBadgeBackgroundColor({ color: badgeColor });
+            chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
+            // Inicia las alarmas para actualizar cada minuto
+            startBadgeUpdateAlarms();
+        } else {
+            // Múltiples temporizadores activos, muestra el número con "T"
+            chrome.action.setBadgeText({ text: `${activeTimers.length}-T` });
+            chrome.action.setBadgeBackgroundColor({ color: badgeColor });
+            chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
+            // Detiene las alarmas de actualización del badge
+            stopBadgeUpdateAlarms();
+        }
     }
 }
 
@@ -75,15 +88,15 @@ function startBadgeUpdateAlarms() {
     if (badgeUpdateActive) {
         return;
     }
-    
+
     badgeUpdateActive = true;
-    
+
     // Programa la primera alarma inmediatamente para verificar el estado actual
-    chrome.alarms.create('badge-update', { 
-        when: Date.now() + 1000 // En 1 segundo para verificar inmediatamente
+    chrome.alarms.create("badge-update", {
+        when: Date.now() + 1000, // En 1 segundo para verificar inmediatamente
     });
-    
-    console.log('[TIMER DEBUG] Alarmas de actualización del badge iniciadas');
+
+    console.log("[TIMER DEBUG] Alarmas de actualización del badge iniciadas");
 }
 
 // Nueva función para programar la próxima actualización del badge
@@ -91,35 +104,46 @@ function scheduleNextBadgeUpdate() {
     if (!badgeUpdateActive) {
         return;
     }
-    
+
     // Encuentra el temporizador activo más próximo a cambiar de minuto
     const now = Date.now();
     let nextUpdateTime = null;
-    
+
     for (let id in timers) {
         const t = timers[id];
         if (t && t.endTime) {
-            let timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - now;
+            let timeLeft =
+                t.paused && t.pauseTime
+                    ? t.endTime - t.pauseTime
+                    : t.endTime - now;
             if (timeLeft > 0) {
                 // Calcula cuándo cambiará el próximo minuto
                 const currentMinutes = Math.ceil(timeLeft / (60 * 1000));
-                const nextMinuteChange = Math.floor(timeLeft / (60 * 1000)) * 60 * 1000;
-                
+                const nextMinuteChange =
+                    Math.floor(timeLeft / (60 * 1000)) * 60 * 1000;
+
                 // Si el cambio de minuto es en menos de 5 segundos, espera un poco más
-                const updateDelay = Math.max(1000, nextMinuteChange - now + 500);
-                
+                const updateDelay = Math.max(
+                    1000,
+                    nextMinuteChange - now + 500
+                );
+
                 if (!nextUpdateTime || updateDelay < nextUpdateTime) {
                     nextUpdateTime = updateDelay;
                 }
             }
         }
     }
-    
+
     if (nextUpdateTime) {
-        chrome.alarms.create('badge-update', { 
-            when: now + nextUpdateTime
+        chrome.alarms.create("badge-update", {
+            when: now + nextUpdateTime,
         });
-        console.log(`[TIMER DEBUG] Próxima actualización del badge en ${Math.round(nextUpdateTime/1000)}s`);
+        console.log(
+            `[TIMER DEBUG] Próxima actualización del badge en ${Math.round(
+                nextUpdateTime / 1000
+            )}s`
+        );
     } else {
         // No hay temporizadores activos, detener las alarmas
         stopBadgeUpdateAlarms();
@@ -129,9 +153,11 @@ function scheduleNextBadgeUpdate() {
 // Nueva función para detener las alarmas de actualización del badge
 function stopBadgeUpdateAlarms() {
     if (badgeUpdateActive) {
-        chrome.alarms.clear('badge-update');
+        chrome.alarms.clear("badge-update");
         badgeUpdateActive = false;
-        console.log('[TIMER DEBUG] Alarmas de actualización del badge detenidas');
+        console.log(
+            "[TIMER DEBUG] Alarmas de actualización del badge detenidas"
+        );
     }
 }
 
@@ -144,21 +170,23 @@ function formatTimeForNotification(totalMs) {
     const totalSeconds = Math.round(totalMs / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    
+
     if (minutes === 0) {
-        return `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+        return `${seconds} segundo${seconds !== 1 ? "s" : ""}`;
     } else if (seconds === 0) {
-        return `${minutes} minuto${minutes !== 1 ? 's' : ''}`;
+        return `${minutes} minuto${minutes !== 1 ? "s" : ""}`;
     } else {
-        return `${minutes} minuto${minutes !== 1 ? 's' : ''} y ${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+        return `${minutes} minuto${
+            minutes !== 1 ? "s" : ""
+        } y ${seconds} segundo${seconds !== 1 ? "s" : ""}`;
     }
 }
 
 // Al restaurar el estado, reprograma las alarmas si corresponde
-const stateRestored = new Promise(resolve => {
-    chrome.storage.local.get('timersState', (data) => {
-        console.log('[TIMER DEBUG] Restaurando estado:', data.timersState);
-        
+const stateRestored = new Promise((resolve) => {
+    chrome.storage.local.get("timersState", (data) => {
+        console.log("[TIMER DEBUG] Restaurando estado:", data.timersState);
+
         if (data.timersState) {
             for (let id in data.timersState) {
                 let t = data.timersState[id];
@@ -168,27 +196,40 @@ const stateRestored = new Promise(resolve => {
                     paused: t.paused,
                     pauseTime: t.pauseTime,
                     totalTime: t.totalTime,
-                    originalMinutes: t.originalMinutes
+                    originalMinutes: t.originalMinutes,
                 };
-                
+
                 if (timers[id].endTime && !timers[id].paused) {
                     let timeLeft = timers[id].endTime - Date.now();
-                    console.log(`[TIMER DEBUG] Timer ${id}: timeLeft = ${timeLeft}ms (${Math.ceil(timeLeft/1000)}s)`);
-                    
+                    console.log(
+                        `[TIMER DEBUG] Timer ${id}: timeLeft = ${timeLeft}ms (${Math.ceil(
+                            timeLeft / 1000
+                        )}s)`
+                    );
+
                     // Dar margen de tolerancia de 30 segundos para evitar cancelaciones prematuras
-                    if (timeLeft > -30000) { // Si pasaron menos de 30 segundos del tiempo límite
+                    if (timeLeft > -30000) {
+                        // Si pasaron menos de 30 segundos del tiempo límite
                         if (timeLeft > 0) {
                             // Reprograma la alarma para la notificación final
-                            chrome.alarms.create(`timer-${id}`, { when: timers[id].endTime });
-                            console.log(`[TIMER DEBUG] Timer ${id} reprogramado`);
+                            chrome.alarms.create(`timer-${id}`, {
+                                when: timers[id].endTime,
+                            });
+                            console.log(
+                                `[TIMER DEBUG] Timer ${id} reprogramado`
+                            );
                         } else {
                             // Está en el margen de tolerancia, asume que debe notificar ahora
-                            console.log(`[TIMER DEBUG] Timer ${id} debe notificar (margen de tolerancia)`);
+                            console.log(
+                                `[TIMER DEBUG] Timer ${id} debe notificar (margen de tolerancia)`
+                            );
                             notify(id, timers[id].totalTime);
                         }
                     } else {
                         // Expiró hace más de 30 segundos, elimina silenciosamente
-                        console.log(`[TIMER DEBUG] Timer ${id} expirado hace tiempo, eliminando silenciosamente`);
+                        console.log(
+                            `[TIMER DEBUG] Timer ${id} expirado hace tiempo, eliminando silenciosamente`
+                        );
                         delete timers[id];
                     }
                 }
@@ -196,11 +237,13 @@ const stateRestored = new Promise(resolve => {
             // Guarda el estado limpio después de eliminar temporizadores obsoletos
             saveState();
         }
-        
+
         // Al restaurar el estado, recalcula el icono de forma debounced considerando timers y alarmas
         updateIconDebounced();
         updateBadge(); // Actualiza el badge al restaurar el estado
-        console.log('[TIMER DEBUG] Estado restaurado, icono y badge recalculados');
+        console.log(
+            "[TIMER DEBUG] Estado restaurado, icono y badge recalculados"
+        );
         resolve(); // La restauración ha finalizado
     });
 });
@@ -216,7 +259,7 @@ function saveState() {
     if (saveStateTimeout) {
         clearTimeout(saveStateTimeout);
     }
-    
+
     saveStateTimeout = setTimeout(() => {
         // Guardar solo endTime, paused, pauseTime (no funciones)
         let state = {};
@@ -226,10 +269,10 @@ function saveState() {
                 paused: timers[id].paused,
                 pauseTime: timers[id].pauseTime,
                 totalTime: timers[id].totalTime,
-                originalMinutes: timers[id].originalMinutes
+                originalMinutes: timers[id].originalMinutes,
             };
         }
-        console.log('[TIMER DEBUG] Guardando estado:', state);
+        console.log("[TIMER DEBUG] Guardando estado:", state);
         chrome.storage.local.set({ timersState: state });
         saveStateTimeout = null;
     }, 100);
@@ -258,7 +301,8 @@ function notify(id, totalTimeMs) {
     // chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
 
     // Muestra la notificación
-    const displayTime = totalTimeMs > 0 ? formatTimeForNotification(totalTimeMs) : "el tiempo";
+    const displayTime =
+        totalTimeMs > 0 ? formatTimeForNotification(totalTimeMs) : "el tiempo";
     chrome.notifications.create({
         type: "basic",
         iconUrl: "Iconos/icon128.png",
@@ -268,7 +312,7 @@ function notify(id, totalTimeMs) {
         requireInteraction: true, // Evita que se oculte automáticamente
         silent: false, // Permite sonido
     });
-    
+
     // Actualiza el badge después de detener el temporizador
     updateBadge();
 }
@@ -299,31 +343,35 @@ function stopTimer(id) {
  */
 function startTimer(id, minutes) {
     console.log(`[TIMER DEBUG] Iniciando timer ${id} por ${minutes} minutos`);
-    
+
     // Solo limpia el temporizador específico, no llama a stopTimer que actualiza el icono
     if (timers[id]) {
         chrome.alarms.clear(`timer-${id}`);
     }
-    
+
     const now = Date.now();
     const totalTime = minutes * 60 * 1000; // Convertir minutos a milisegundos
     const endTime = now + totalTime;
-    
+
     timers[id] = {
         timer: null,
         endTime: endTime,
         paused: false,
         pauseTime: null,
         totalTime: totalTime,
-        originalMinutes: minutes
+        originalMinutes: minutes,
     };
-    
+
     saveState();
-    
+
     // Crea la alarma para la notificación final
     chrome.alarms.create(`timer-${id}`, { when: endTime });
-    console.log(`[TIMER DEBUG] Timer ${id} iniciado, termina a las ${new Date(endTime).toLocaleTimeString()}`);
-    
+    console.log(
+        `[TIMER DEBUG] Timer ${id} iniciado, termina a las ${new Date(
+            endTime
+        ).toLocaleTimeString()}`
+    );
+
     // Actualiza el badge inmediatamente
     updateBadge();
 }
@@ -348,7 +396,12 @@ function pauseTimer(id) {
  * @param {number} id - ID del temporizador a reanudar.
  */
 function resumeTimer(id) {
-    if (timers[id] && timers[id].paused && timers[id].endTime && timers[id].pauseTime) {
+    if (
+        timers[id] &&
+        timers[id].paused &&
+        timers[id].endTime &&
+        timers[id].pauseTime
+    ) {
         let timeLeft = timers[id].endTime - timers[id].pauseTime;
         timers[id].endTime = Date.now() + timeLeft;
         timers[id].paused = false;
@@ -386,9 +439,24 @@ function updateIconDebounced() {
         // Considera timers y alarmas programadas para un estado consistente
         chrome.alarms.getAll((alarms) => {
             const now = Date.now();
-            const anyFutureAlarm = (alarms || []).some(a => a.name && a.name.startsWith('timer-') && a.scheduledTime && a.scheduledTime > now);
-            const anyRunning = Object.values(timers).some(t => t && !t.paused && t.endTime && t.endTime > now);
-            const anyPausedPending = Object.values(timers).some(t => t && t.paused && t.endTime && t.pauseTime && (t.endTime - t.pauseTime) > 0);
+            const anyFutureAlarm = (alarms || []).some(
+                (a) =>
+                    a.name &&
+                    a.name.startsWith("timer-") &&
+                    a.scheduledTime &&
+                    a.scheduledTime > now
+            );
+            const anyRunning = Object.values(timers).some(
+                (t) => t && !t.paused && t.endTime && t.endTime > now
+            );
+            const anyPausedPending = Object.values(timers).some(
+                (t) =>
+                    t &&
+                    t.paused &&
+                    t.endTime &&
+                    t.pauseTime &&
+                    t.endTime - t.pauseTime > 0
+            );
             const shouldBeActive = anyFutureAlarm || anyRunning;
             updateExtensionIcon(shouldBeActive);
             updateBadge(); // Actualiza el badge junto con el icono
@@ -403,57 +471,62 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ error: "ID de temporizador inválido" });
         return true;
     }
-    
+
     if (message.action === "start_timer") {
         startTimer(id, message.minutes);
         updateIconDebounced();
         sendResponse({ started: true });
-        
     } else if (message.action === "pause_timer") {
         pauseTimer(id);
         updateIconDebounced();
         sendResponse({ paused: true });
-        
     } else if (message.action === "resume_timer") {
         resumeTimer(id);
         updateIconDebounced();
         sendResponse({ resumed: true });
-        
     } else if (message.action === "reset_timer") {
         stopTimer(id);
         updateIconDebounced();
         sendResponse({ reset: true });
-        
     } else if (message.action === "get_timer_status") {
         // Espera a que el estado se restaure antes de responder
         stateRestored.then(() => {
-            let timeLeft = 0, total = 0;
+            let timeLeft = 0,
+                total = 0;
             let t = timers[id];
             if (t && t.endTime) {
-                timeLeft = t.paused && t.pauseTime ? t.endTime - t.pauseTime : t.endTime - Date.now();
+                timeLeft =
+                    t.paused && t.pauseTime
+                        ? t.endTime - t.pauseTime
+                        : t.endTime - Date.now();
                 if (timeLeft < 0) timeLeft = 0;
                 total = t.totalTime || 0;
             }
             sendResponse({
                 timeLeft,
-                isRunning: !!(t && !t.paused && t.endTime && t.endTime > Date.now()),
+                isRunning: !!(
+                    t &&
+                    !t.paused &&
+                    t.endTime &&
+                    t.endTime > Date.now()
+                ),
                 paused: t ? t.paused : false,
                 endTime: t ? t.endTime : null,
-                totalTime: total
+                totalTime: total,
             });
         });
         return true; // Indica que la respuesta será asíncrona
     }
-    
+
     return true;
 });
 
 // Listener para alarmas de Chrome (notificación final y actualización de badge)
 chrome.alarms.onAlarm.addListener((alarm) => {
     stateRestored.then(() => {
-        if (alarm.name.startsWith('timer-')) {
+        if (alarm.name.startsWith("timer-")) {
             // Alarma de temporizador
-            const id = parseInt(alarm.name.split('-')[1], 10);
+            const id = parseInt(alarm.name.split("-")[1], 10);
             console.log(`[TIMER DEBUG] Alarma disparada para timer ${id}`);
 
             const t = timers[id];
@@ -461,16 +534,17 @@ chrome.alarms.onAlarm.addListener((alarm) => {
                 console.log(`[TIMER DEBUG] Notificando timer ${id}`);
                 notify(id, t.totalTime);
             } else {
-                console.log(`[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`);
+                console.log(
+                    `[TIMER DEBUG] Timer ${id} no existe o está pausado, ignorando alarma`
+                );
             }
-        } else if (alarm.name === 'badge-update') {
+        } else if (alarm.name === "badge-update") {
             // Alarma de actualización del badge
-            console.log('[TIMER DEBUG] Actualizando badge por alarma');
+            console.log("[TIMER DEBUG] Actualizando badge por alarma");
             updateBadge();
-            
+
             // Programa la próxima actualización
             scheduleNextBadgeUpdate();
         }
     });
 });
-
