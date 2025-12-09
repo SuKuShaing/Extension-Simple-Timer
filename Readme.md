@@ -16,6 +16,7 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
+-   [x] Se añade una transición a la aparición y desaparición de las líneas diagonales que visualizan el tiempo corriendo
 -   [x] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
 -   [x] Que todo el temporizador se coloque en azul y no solo la tapa al momento de estar activo
 -   [x] Que cuando el tiempo esté encendido hayan unas lineas diagonales más claras que se muevan para mostrar el avance del tiempo
@@ -40,7 +41,11 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ### Versiones
 
-#### Versión 1.9 (Disponible en Chrome Web Store)
+#### Versión 1.10 (Disponible en Chrome Web Store)
+
+-   Se añade una transición a la aparición y desaparición de las líneas diagonales que visualizan el tiempo corriendo
+
+#### Versión 1.9
 
 -   Se cambia el funcionamiento del badge, ahora se marca bien el comportamiento entre pausado y activo
 -   Ahora el logo del temporizador tiene una mejor apariencia en temas claros

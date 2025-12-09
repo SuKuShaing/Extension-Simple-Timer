@@ -118,6 +118,7 @@ section { /* Los timers */
 	font-size: 18px;
 	/* margin: auto; */
 	color: var(--Blanco);
+	z-index: 10;
 	/* outline: 1px solid violet; */
 }
 
@@ -136,9 +137,17 @@ section { /* Los timers */
 	background-color: var(--Azul-primario);
 	border-radius: 6px;
 	transition: width 0.3s ease;
+	position: relative;
+	overflow: hidden;
 }
 
-.running-stripes {
+.time-bar-fill::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	background-image: linear-gradient(
 		45deg,
 		rgba(255, 255, 255, 0.2) 25%,
@@ -151,6 +160,13 @@ section { /* Los timers */
 	);
 	background-size: 20px 20px;
 	animation: move-stripes 2s linear infinite;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+	pointer-events: none;
+}
+
+.running-stripes::after {
+	opacity: 1;
 }
 
 @keyframes move-stripes {
