@@ -26,7 +26,7 @@ Protocolo de mensajes (`chrome.runtime.sendMessage`): `start_timer` (con `minute
 Chrome puede terminar el service worker en cualquier momento, y esto condiciona el diseño:
 
 - El fin de cada temporizador se dispara con una alarma `timer-<id>`, no con `setTimeout`. La alarma despierta al worker para notificar.
-- Al arrancar, el worker restaura `timersState` desde `chrome.storage.local` y resuelve la promesa `stateRestored`. El listener de mensajes (todas las acciones) y el listener de alarmas la esperan y responden de forma asíncrona: un handler nuevo que lea o modifique `timers` también debe esperarla.
+- Al arrancar, el worker restaura `timersState` desde `chrome.storage.local` y resuelve la promesa `stateRestored`. El listener de mensajes (todas las acciones), el de alarmas y `onInstalled` la esperan y responden de forma asíncrona: un handler nuevo que lea o modifique `timers` también debe esperarla.
 - Los temporizadores vencidos hace menos de 30 s notifican al restaurarse; los más antiguos se eliminan sin notificar.
 - `saveState()` guarda con debounce (100 ms) y copia una lista fija de campos. Un campo nuevo en `timers[id]` debe agregarse en `saveState()` y en la restauración, o se perderá.
 

@@ -418,12 +418,16 @@ function resumeTimer(id) {
 /**
  * Evento que se ejecuta cuando la extensión se instala o actualiza.
  * Resetea todos los temporizadores y deja el sistema limpio al instalar.
+ * Espera a que se restaure el estado: si no, la restauración podría terminar después
+ * y volver a cargar los temporizadores recién borrados junto con sus alarmas.
  */
 chrome.runtime.onInstalled.addListener(() => {
-    for (let i = 1; i <= MAX_TIMERS; i++) stopTimer(i);
-    // Detiene cualquier alarma de badge que pueda estar corriendo
-    stopBadgeUpdateAlarms();
-    console.log("La extensión se ha instalado con éxito");
+    stateRestored.then(() => {
+        for (let i = 1; i <= MAX_TIMERS; i++) stopTimer(i);
+        // Detiene cualquier alarma de badge que pueda estar corriendo
+        stopBadgeUpdateAlarms();
+        console.log("La extensión se ha instalado con éxito");
+    });
 });
 
 /**

@@ -20,6 +20,7 @@ Imagen de la nueva versión de la interfaz de la extensión:
 -   [ ] una web landing donde se muestre el producto
 -   [ ] una página dentro de la web que sea el gracias
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Bug: `onInstalled` no esperaba a `stateRestored`, así que si la restauración terminaba después podía volver a cargar los temporizadores recién borrados y sus alarmas, y sobrevivían a la recarga de la extensión. Ahora `onInstalled` espera la restauración antes de detenerlos
 -   [x] Bug: `start_timer`, `pause_timer`, `resume_timer` y `reset_timer` no esperaban a `stateRestored`, así que si despertaban al service worker la restauración podía pisar el cambio. Ahora todas las acciones del listener de mensajes esperan la restauración
 -   [x] Bug: la entrada de tiempo cambiaba de escala (`0,6` = 60 s pero `0,7` = 42 s). Ahora los decimales siempre son fracción de minuto (`0,1` = 6 s, `2,5` = 2:30)
 -   [x] Que se puedan ingresar segundos con un sufijo: `10s`, `10seg`, `10 segundos`, etc.
