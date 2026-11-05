@@ -2,10 +2,13 @@
 
 Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tareas.
 
-[![Instalar desde la Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Instalar-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
-[![Sitio web de Simple Timer](https://img.shields.io/badge/Sitio_web-Visitar-006ce0?style=for-the-badge&logo=githubpages&logoColor=white)](https://sukushaing.github.io/Extension-Simple-Timer/)
+<!-- Badges generados con shields.io y guardados en img/badges/: el proxy de imágenes de GitHub
+     corta a los ~4 s y shields.io a veces tarda más, lo que dejaba los badges rotos -->
 
-![Disponible en Chrome, Edge, Opera y Brave](https://img.shields.io/badge/Disponible_en-Chrome_%C2%B7_Edge_%C2%B7_Opera_%C2%B7_Brave-555555?style=flat-square)
+[![Instalar desde la Chrome Web Store](./img/badges/chrome-web-store.svg)](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
+[![Sitio web de Simple Timer](./img/badges/sitio-web.svg)](https://sukushaing.github.io/Extension-Simple-Timer/)
+
+![Disponible en Chrome, Edge, Opera y Brave](./img/badges/disponible-en.svg)
 
 Imagen de la nueva versión de la interfaz de la extensión:
 
@@ -15,8 +18,8 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## Creada por:
 
-[![LinkedIn de Sebastián Sanhueza Tapia](https://img.shields.io/badge/LinkedIn-Sebasti%C3%A1n_Sanhueza_Tapia-0A66C2?style=for-the-badge)](https://www.linkedin.com/in/sebastiansanhuezatapia/)
-[![Repositorio en GitHub](https://img.shields.io/badge/GitHub-Repositorio-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/SuKuShaing/Extension-Simple-Timer)
+[![LinkedIn de Sebastián Sanhueza Tapia](./img/badges/linkedin.svg)](https://www.linkedin.com/in/sebastiansanhuezatapia/)
+[![Repositorio en GitHub](./img/badges/github.svg)](https://github.com/SuKuShaing/Extension-Simple-Timer)
 
 ## To Do
 
