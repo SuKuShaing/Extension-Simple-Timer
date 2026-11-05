@@ -474,25 +474,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return true;
     }
 
-    if (message.action === "start_timer") {
-        startTimer(id, message.minutes);
-        updateIconDebounced();
-        sendResponse({ started: true });
-    } else if (message.action === "pause_timer") {
-        pauseTimer(id);
-        updateIconDebounced();
-        sendResponse({ paused: true });
-    } else if (message.action === "resume_timer") {
-        resumeTimer(id);
-        updateIconDebounced();
-        sendResponse({ resumed: true });
-    } else if (message.action === "reset_timer") {
-        stopTimer(id);
-        updateIconDebounced();
-        sendResponse({ reset: true });
-    } else if (message.action === "get_timer_status") {
-        // Espera a que el estado se restaure antes de responder
-        stateRestored.then(() => {
+    // Todas las acciones esperan a que el estado se restaure: si el mensaje despertó al
+    // service worker, actuar antes dejaría que la restauración pisara el cambio
+    stateRestored.then(() => {
+        if (message.action === "start_timer") {
+            startTimer(id, message.minutes);
+            updateIconDebounced();
+            sendResponse({ started: true });
+        } else if (message.action === "pause_timer") {
+            pauseTimer(id);
+            updateIconDebounced();
+            sendResponse({ paused: true });
+        } else if (message.action === "resume_timer") {
+            resumeTimer(id);
+            updateIconDebounced();
+            sendResponse({ resumed: true });
+        } else if (message.action === "reset_timer") {
+            stopTimer(id);
+            updateIconDebounced();
+            sendResponse({ reset: true });
+        } else if (message.action === "get_timer_status") {
             let timeLeft = 0,
                 total = 0;
             let t = timers[id];
@@ -516,11 +517,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 endTime: t ? t.endTime : null,
                 totalTime: total,
             });
-        });
-        return true; // Indica que la respuesta será asíncrona
-    }
+        }
+    });
 
-    return true;
+    return true; // Indica que la respuesta será asíncrona
 });
 
 // Listener para alarmas de Chrome (notificación final y actualización de badge)

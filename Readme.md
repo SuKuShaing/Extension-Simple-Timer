@@ -16,16 +16,11 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] Bug posible: `start_timer`, `pause_timer`, `resume_timer` y `reset_timer` no esperan a `stateRestored` (listener de mensajes en `background.js`)
-    -   Si uno de estos mensajes despierta al service worker, se ejecuta antes de que termine la restauración del estado. Hoy solo `get_timer_status` y el listener de alarmas la esperan
-    -   Efecto: la restauración podría sobrescribir un temporizador recién iniciado, o una pausa podría no hacer nada porque el temporizador aún no está cargado
-    -   Detectado leyendo el código, falta reproducirlo. La ventana es pequeña porque el popup consulta el estado cada segundo mientras hay un temporizador activo
-    -   Solución propuesta: ejecutar estas acciones dentro de `stateRestored.then(...)` y responder de forma asíncrona, igual que `get_timer_status`
-
 -   [ ] Pedir una reseña con una notificación a los primeros 10 usos y después cada 100 usos, pedir una reseña
 -   [ ] una web landing donde se muestre el producto
 -   [ ] una página dentro de la web que sea el gracias
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Bug: `start_timer`, `pause_timer`, `resume_timer` y `reset_timer` no esperaban a `stateRestored`, así que si despertaban al service worker la restauración podía pisar el cambio. Ahora todas las acciones del listener de mensajes esperan la restauración
 -   [x] Bug: la entrada de tiempo cambiaba de escala (`0,6` = 60 s pero `0,7` = 42 s). Ahora los decimales siempre son fracción de minuto (`0,1` = 6 s, `2,5` = 2:30)
 -   [x] Que se puedan ingresar segundos con un sufijo: `10s`, `10seg`, `10 segundos`, etc.
 -   [x] Bug: la alarma `badge-update` corría cada ~1 segundo en vez de cada minuto, ahora despierta al service worker solo cuando cambia el minuto y no corre mientras el temporizador está pausado
