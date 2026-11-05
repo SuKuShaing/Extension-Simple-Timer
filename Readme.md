@@ -23,8 +23,8 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] Subir la app
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Subir la app
 -   [x] Traducir la extensión al inglés con `_locales`: el popup, las notificaciones y la petición de reseña se muestran en español o inglés según el idioma del navegador
 -   [x] publicar la web antes de subir la 1.11
 -   [x] Activar GitHub Pages (Settings → Pages → Source: "GitHub Actions")
