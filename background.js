@@ -288,6 +288,147 @@ function clearState(id) {
     saveState();
 }
 
+/*
+ * Petición de reseña
+ *
+ * Cuenta los temporizadores terminados y, en ciertos hitos, muestra una notificación
+ * que invita a dejar una reseña en la Chrome Web Store:
+ * - Si el usuario nunca hizo clic en "Dejar reseña": en el uso 10 y en cada múltiplo de 100.
+ * - Si ya hizo clic alguna vez: solo en cada múltiplo de 1000.
+ * El estado vive en chrome.storage.local, en `reviewState`, separado de `timersState`.
+ */
+const REVIEW_URL =
+    "https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe/reviews";
+const REVIEW_NOTIFICATION_ID = "review-request";
+// Espera tras "¡Tiempo terminado!" para no taparla. Un setTimeout basta porque el service
+// worker sigue vivo 30 s después del último evento, y una alarma no puede durar menos de 30 s.
+const REVIEW_DELAY_MS = 10000;
+
+// No mencionan cuántos temporizadores terminó el usuario, para que no se sienta vigilado
+const REVIEW_MESSAGES = [
+    {
+        title: "¿Te está sirviendo Simple Timer?",
+        message: "Déjanos una reseña en la Chrome Web Store.",
+    },
+    {
+        title: "¿Te gusta Simple Timer?",
+        message: "Déjanos tu reseña, nos ayuda a seguir mejorando.",
+    },
+    {
+        title: "Cuéntale a los demás sobre Simple Timer",
+        message: "Tu reseña ayuda a que otras personas lo encuentren.",
+    },
+    {
+        title: "Cuéntanos cuánto te gusta Simple Timer",
+        message: "Déjanos una reseña en la Chrome Web Store.",
+    },
+    {
+        title: "¿Qué te parece Simple Timer?",
+        message: "Tu opinión nos importa, déjanos una reseña.",
+    },
+    {
+        title: "¿Simple Timer te ayuda con tu tiempo?",
+        message: "Cuéntalo en una reseña en la Chrome Web Store.",
+    },
+    {
+        title: "Ayúdanos a crecer",
+        message: "Una reseña de Simple Timer marca la diferencia.",
+    },
+    {
+        title: "¿Simple Timer te ha sido útil?",
+        message: "Compártelo con una reseña en la Chrome Web Store.",
+    },
+    {
+        title: "Tu opinión cuenta",
+        message: "Déjale una reseña a Simple Timer, solo toma un minuto.",
+    },
+    {
+        title: "¿Recomendarías Simple Timer?",
+        message: "Déjanos una reseña y cuéntale a otros.",
+    },
+];
+
+// Encadena las lecturas y escrituras de `reviewState` para que dos temporizadores que
+// terminan a la vez (o un clic simultáneo) no se pisen el contador
+let reviewStateQueue = Promise.resolve();
+
+/**
+ * Aplica `update` sobre `reviewState` y guarda el resultado, de forma serializada.
+ * @param {(state: {completedTimers: number, reviewClicked: boolean}) => (Function|void)} update
+ *        Modifica el estado recibido; puede devolver una acción a ejecutar después de guardar.
+ */
+function updateReviewState(update) {
+    reviewStateQueue = reviewStateQueue
+        .then(async () => {
+            const data = await chrome.storage.local.get("reviewState");
+            const state = {
+                completedTimers: data.reviewState?.completedTimers || 0,
+                reviewClicked: !!data.reviewState?.reviewClicked,
+            };
+            const afterSave = update(state);
+            await chrome.storage.local.set({ reviewState: state });
+            if (typeof afterSave === "function") afterSave();
+        })
+        .catch((error) => {
+            console.error("[TIMER DEBUG] Error al actualizar reviewState:", error);
+        });
+}
+
+/**
+ * Indica si corresponde pedir la reseña al llegar a `completedTimers` usos.
+ * @param {number} completedTimers - Temporizadores terminados, incluido el actual.
+ * @param {boolean} reviewClicked - Si el usuario ya hizo clic en "Dejar reseña".
+ * @returns {boolean}
+ */
+function shouldRequestReview(completedTimers, reviewClicked) {
+    if (reviewClicked) return completedTimers % 1000 === 0;
+    return completedTimers === 10 || completedTimers % 100 === 0;
+}
+
+/**
+ * Suma un temporizador terminado y, si es un hito, programa la petición de reseña.
+ */
+function registerCompletedTimer() {
+    updateReviewState((state) => {
+        state.completedTimers++;
+        console.log(
+            `[TIMER DEBUG] Temporizadores terminados: ${state.completedTimers}`
+        );
+        if (shouldRequestReview(state.completedTimers, state.reviewClicked)) {
+            return () => setTimeout(showReviewRequest, REVIEW_DELAY_MS);
+        }
+    });
+}
+
+/**
+ * Muestra la notificación que pide la reseña, con un texto al azar.
+ */
+function showReviewRequest() {
+    const text =
+        REVIEW_MESSAGES[Math.floor(Math.random() * REVIEW_MESSAGES.length)];
+    chrome.notifications.create(REVIEW_NOTIFICATION_ID, {
+        type: "basic",
+        iconUrl: "Iconos/icon128.png",
+        title: text.title,
+        message: text.message,
+        buttons: [{ title: "Dejar reseña" }, { title: "Ahora no" }],
+        priority: 1,
+        silent: true, // "¡Tiempo terminado!" ya sonó
+    });
+    console.log("[TIMER DEBUG] Petición de reseña mostrada");
+}
+
+/**
+ * Abre la página de reseñas y registra el clic, para pedirla solo cada 1000 usos.
+ */
+function openReviewPage() {
+    chrome.tabs.create({ url: REVIEW_URL });
+    chrome.notifications.clear(REVIEW_NOTIFICATION_ID);
+    updateReviewState((state) => {
+        state.reviewClicked = true;
+    });
+}
+
 /**
  * Muestra una notificación nativa cuando un temporizador finaliza.
  * Detiene el temporizador después de mostrar la notificación.
@@ -317,6 +458,9 @@ function notify(id, totalTimeMs) {
 
     // Actualiza el badge después de detener el temporizador
     updateBadge();
+
+    // Cuenta el uso y, si es un hito, pide una reseña unos segundos después
+    registerCompletedTimer();
 }
 
 /**
@@ -554,3 +698,22 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         }
     });
 });
+
+// Clic en el cuerpo de la petición de reseña: abre la página de reseñas
+chrome.notifications.onClicked.addListener((notificationId) => {
+    if (notificationId === REVIEW_NOTIFICATION_ID) {
+        openReviewPage();
+    }
+});
+
+// Botones de la petición de reseña: 0 = "Dejar reseña", 1 = "Ahora no"
+chrome.notifications.onButtonClicked.addListener(
+    (notificationId, buttonIndex) => {
+        if (notificationId !== REVIEW_NOTIFICATION_ID) return;
+        if (buttonIndex === 0) {
+            openReviewPage();
+        } else {
+            chrome.notifications.clear(REVIEW_NOTIFICATION_ID);
+        }
+    }
+);

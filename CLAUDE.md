@@ -42,6 +42,14 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 - **Badge:** con un temporizador muestra los minutos restantes y con varios muestra `N-T`. Es azul si alguno corre y gris (`#7b7b7b`) si todos están pausados.
 - **Actualización:** la alarma `badge-update` solo existe cuando hay exactamente un temporizador y está corriendo. Se dispara 500 ms después de cada cambio de minuto.
 
+### Petición de reseña
+
+- `notify` llama a `registerCompletedTimer`, que cuenta los temporizadores terminados en `reviewState` (`chrome.storage.local`), separado de `timersState`.
+- Se pide la reseña en el uso 10 y en cada múltiplo de 100. Si el usuario hizo clic en "Dejar reseña" (`reviewClicked`), solo en cada múltiplo de 1000 (`shouldRequestReview`).
+- La notificación (`review-request`) sale 10 s después de "¡Tiempo terminado!" con un `setTimeout`, porque una alarma no puede durar menos de 30 s. El texto se elige al azar de `REVIEW_MESSAGES`.
+- Toda lectura o escritura de `reviewState` pasa por `updateReviewState`, que las encadena para que dos temporizadores que terminan a la vez no pisen el contador.
+- Para probarla sin terminar 10 temporizadores, en la consola del service worker: `chrome.storage.local.set({ reviewState: { completedTimers: 9, reviewClicked: false } })`, y después terminar un temporizador de `1s`.
+
 ### Entrada de tiempo
 
 `parseTimeInput` (`popup.js`) acepta dos formatos y redondea al segundo:
