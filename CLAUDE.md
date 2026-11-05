@@ -34,13 +34,13 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 
 - Un temporizador corriendo se define por `endTime` (timestamp absoluto).
 - Al pausar se guarda `pauseTime` y se borra la alarma. El tiempo restante es `endTime - pauseTime`, y al reanudar se recalcula `endTime`.
-- Cada cálculo de tiempo restante debe contemplar ambos casos, como ya hacen `updateBadge`, `scheduleNextBadgeUpdate` y `get_timer_status`.
+- Cada cálculo de tiempo restante debe contemplar ambos casos, como ya hacen `updateBadge` y `get_timer_status`. `scheduleNextBadgeUpdate` es la excepción: ignora los pausados porque su badge no cambia.
 
 ### Icono y badge
 
 - **Icono:** usa la variante `icon_active*` solo si hay un temporizador corriendo; los pausados no cuentan. `updateIconDebounced` también consulta las alarmas programadas.
 - **Badge:** con un temporizador muestra los minutos restantes y con varios muestra `N-T`. Es azul si alguno corre y gris (`#7b7b7b`) si todos están pausados.
-- **Actualización:** la alarma `badge-update` solo existe cuando hay exactamente un temporizador.
+- **Actualización:** la alarma `badge-update` solo existe cuando hay exactamente un temporizador y está corriendo. Se dispara 500 ms después de cada cambio de minuto.
 
 ### Entrada de tiempo
 
@@ -58,7 +58,6 @@ Los comentarios dentro de esa función no coinciden con este comportamiento (dic
 - **Número de temporizadores:** está repetido en `MAX_TIMERS` (`background.js`), en dos bucles `i <= 5` de `popup.js` y en las secciones de `popup.html`, escritas a mano. `TimerController` enlaza por IDs con el patrón `start-btn-<id>`, `time-input-<id>`, etc. Para cambiarlo hay que tocar los tres archivos.
 - **Sonido:** MV3 no permite reproducir sonido desde el service worker, solo desde el popup abierto. Por eso el fin de un temporizador usa solo la notificación nativa (ver la llamada comentada en `notify`).
 - **Permisos:** solo `notifications`, `storage` y `alarms`. La versión 1.2 quitó los innecesarios, y un permiso nuevo afecta la revisión de la Web Store.
-- **`scheduleNextBadgeUpdate`:** resta `now` (timestamp) a una duración, así que el retraso siempre cae en el mínimo de 1000 ms. La alarma corre cada ~1 s en vez de cada minuto, como pretende el código.
 - **Código sin uso:** las constantes globales al inicio de `popup.js` (`startBtn`, `pauseBtn`, etc.) y el `formatTime` global no se usan. Los iconos de los botones son SVG inline en `popup.html`, no los archivos de `Iconos/iconos_btns/`.
 
 ## Convenciones

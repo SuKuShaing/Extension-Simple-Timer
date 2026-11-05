@@ -69,8 +69,13 @@ function updateBadge() {
             chrome.action.setBadgeText({ text: timeLeftMinutes.toString() });
             chrome.action.setBadgeBackgroundColor({ color: badgeColor });
             chrome.action.setBadgeTextColor({ color: "#FFFFFF" }); // Texto blanco
-            // Inicia las alarmas para actualizar cada minuto
-            startBadgeUpdateAlarms();
+            if (activeTimers[0].paused) {
+                // Un temporizador pausado no cambia su badge, no hace falta despertar al worker
+                stopBadgeUpdateAlarms();
+            } else {
+                // Inicia las alarmas para actualizar cada minuto
+                startBadgeUpdateAlarms();
+            }
         } else {
             // Múltiples temporizadores activos, muestra el número con "T"
             chrome.action.setBadgeText({ text: `${activeTimers.length}-T` });
@@ -91,10 +96,9 @@ function startBadgeUpdateAlarms() {
 
     badgeUpdateActive = true;
 
-    // Programa la primera alarma inmediatamente para verificar el estado actual
-    chrome.alarms.create("badge-update", {
-        when: Date.now() + 1000, // En 1 segundo para verificar inmediatamente
-    });
+    // El badge ya se actualizó, así que la primera alarma va al próximo cambio de minuto.
+    // Esto también evita adelantar la alarma cada vez que el worker despierta.
+    scheduleNextBadgeUpdate();
 
     console.log("[TIMER DEBUG] Alarmas de actualización del badge iniciadas");
 }
@@ -105,27 +109,25 @@ function scheduleNextBadgeUpdate() {
         return;
     }
 
-    // Encuentra el temporizador activo más próximo a cambiar de minuto
+    // Encuentra el temporizador corriendo más próximo a cambiar de minuto
     const now = Date.now();
     let nextUpdateTime = null;
 
     for (let id in timers) {
         const t = timers[id];
-        if (t && t.endTime) {
-            let timeLeft =
-                t.paused && t.pauseTime
-                    ? t.endTime - t.pauseTime
-                    : t.endTime - now;
+        // Un temporizador pausado no cambia su badge, no necesita alarma
+        if (t && t.endTime && !t.paused) {
+            const timeLeft = t.endTime - now;
             if (timeLeft > 0) {
-                // Calcula cuándo cambiará el próximo minuto
+                // Tiempo restante en el que el badge bajará al minuto siguiente
                 const currentMinutes = Math.ceil(timeLeft / (60 * 1000));
-                const nextMinuteChange =
-                    Math.floor(timeLeft / (60 * 1000)) * 60 * 1000;
+                const nextMinuteChange = (currentMinutes - 1) * 60 * 1000;
 
-                // Si el cambio de minuto es en menos de 5 segundos, espera un poco más
+                // Despierta 500 ms después del cambio para asegurar que ya ocurrió.
+                // Chrome no dispara alarmas con menos de 1 segundo de separación.
                 const updateDelay = Math.max(
                     1000,
-                    nextMinuteChange - now + 500
+                    timeLeft - nextMinuteChange + 500
                 );
 
                 if (!nextUpdateTime || updateDelay < nextUpdateTime) {

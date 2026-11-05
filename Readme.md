@@ -16,10 +16,6 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] Bug: la alarma `badge-update` corre cada ~1 segundo en vez de cada minuto (`scheduleNextBadgeUpdate` en `background.js`)
-    -   Causa: `nextMinuteChange` es una duración, pero se le resta `now`, que es un timestamp (`nextMinuteChange - now + 500`). El resultado siempre es negativo, así que `Math.max(1000, ...)` siempre devuelve 1000 ms
-    -   Efecto: con un solo temporizador activo o pausado, el service worker se despierta cada ~1 s para actualizar un badge que solo cambia cada minuto
-    -   Solución propuesta: calcular el retraso con `timeLeft - nextMinuteChange + 500`, y no reprogramar la alarma mientras el temporizador esté pausado, porque su badge no cambia
 -   [ ] Bug: la entrada de tiempo cambia de escala y no coincide con sus comentarios (`parseTimeInput` en `popup.js`)
     -   Hasta `0,6` los dígitos cuentan como segundos sobre 100: `0,1` = 10 s, `0,5` = 50 s, `0,6` = 60 s. Los comentarios dicen 6 s, 30 s y 36 s
     -   Desde ahí los decimales cuentan como fracción de minuto: `0,61` = 37 s, `0,7` = 42 s, `0,75` = 45 s
@@ -35,6 +31,7 @@ Imagen de la nueva versión de la interfaz de la extensión:
 -   [ ] una web landing donde se muestre el producto
 -   [ ] una página dentro de la web que sea el gracias
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Bug: la alarma `badge-update` corría cada ~1 segundo en vez de cada minuto, ahora despierta al service worker solo cuando cambia el minuto y no corre mientras el temporizador está pausado
 -   [x] Se añade una transición a la aparición y desaparición de las líneas diagonales que visualizan el tiempo corriendo
 -   [x] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
 -   [x] Que todo el temporizador se coloque en azul y no solo la tapa al momento de estar activo
