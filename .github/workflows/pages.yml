@@ -1,0 +1,48 @@
+# Publica la web (carpeta docs/) en GitHub Pages:
+# https://sukushaing.github.io/Extension-Simple-Timer/
+#
+# Requiere una sola configuración en el repo: Settings → Pages → Source: "GitHub Actions".
+# Solo se ejecuta cuando cambia docs/ o este archivo, o a mano desde la pestaña Actions.
+
+name: Publicar web en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un solo despliegue a la vez; si llega uno nuevo, no cancela el que está en curso
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v6
+
+      # Sube solo docs/: la extensión no se publica en la web
+      - name: Empaquetar la web
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+      - name: Publicar
+        id: despliegue
+        uses: actions/deploy-pages@v5

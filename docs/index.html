@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title data-i18n="inicio.titulo">Simple Timer: cinco temporizadores en tu navegador</title>
+		<meta
+			name="description"
+			content="Extensión gratuita con cinco temporizadores independientes para Chrome, Edge, Opera y Brave. Te avisa con una notificación y muestra el tiempo restante en el icono."
+			data-i18n-attr="content:inicio.descripcion"
+		/>
+		<meta property="og:title" content="Simple Timer" />
+		<meta
+			property="og:description"
+			content="Cinco temporizadores independientes, a un clic en tu navegador."
+			data-i18n-attr="content:inicio.og_descripcion"
+		/>
+		<meta property="og:image" content="https://sukushaing.github.io/Extension-Simple-Timer/img/captura-navegador.png" />
+		<meta property="og:type" content="website" />
+		<link rel="icon" type="image/png" href="img/favicon.png" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<script src="js/i18n.js"></script>
+		<script src="js/demo.js" defer></script>
+	</head>
+	<body>
+		<header class="cabecera">
+			<div class="container">
+				<a class="marca" href="#">
+					<img src="img/icon128.png" alt="" width="32" height="32" />
+					Simple Timer
+				</a>
+				<nav class="nav" aria-label="Principal" data-i18n-attr="aria-label:comun.nav_principal">
+					<a href="#funciones" data-i18n="inicio.nav_funciones">Funciones</a>
+					<a href="#formatos" data-i18n="inicio.nav_formatos">Cómo usarla</a>
+					<a href="#capturas" data-i18n="inicio.nav_capturas">Capturas</a>
+					<a href="#preguntas" data-i18n="inicio.nav_preguntas">Preguntas</a>
+				</nav>
+				<button class="selector-idioma" type="button" data-selector-idioma>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h7" /><path d="M9 3v2c0 4.418 -2.239 8 -5 8" /><path d="M5 9c0 2.144 2.952 3.908 6.7 4" /><path d="M12 20l4 -9l4 9" /><path d="M19.1 18h-6.2" /></svg>
+					<span data-idioma-destino>EN</span>
+				</button>
+				<a class="btn btn-primario btn-chico" href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe" data-i18n="comun.instalar_corto">Instalar gratis</a>
+			</div>
+		</header>
+
+		<main>
+			<!-- Hero con la demo -->
+			<section class="hero">
+				<div class="container">
+					<div class="hero-texto">
+						<span class="etiqueta" data-i18n="inicio.etiqueta">Extensión gratuita para Chrome, Edge, Opera y Brave</span>
+						<h1 data-i18n="inicio.h1">Cinco temporizadores, <span class="resaltado">a un clic</span></h1>
+						<p data-i18n="inicio.subtitulo">
+							Mide tus bloques de trabajo, la pausa del café o la pasta en la olla sin salir del navegador. Escribe los minutos, dale play y sigue en lo tuyo: Simple Timer te avisa cuando termina.
+						</p>
+						<div class="hero-acciones">
+							<a class="btn btn-primario" href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M12 9h8.4" /><path d="M14.598 13.5l-4.2 7.275" /><path d="M9.402 13.5l-4.2 -7.275" /></svg>
+								<span data-i18n="comun.instalar">Añadir al navegador, es gratis</span>
+							</a>
+							<a class="btn btn-secundario" href="#funciones" data-i18n="inicio.ver_funciones">Ver funciones</a>
+						</div>
+						<ul class="hero-confianza">
+							<li>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+								<span data-i18n="inicio.confianza_1">Sin cuentas</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+								<span data-i18n="inicio.confianza_2">Sin anuncios</span>
+							</li>
+							<li>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+								<span data-i18n="inicio.confianza_3">Código abierto</span>
+							</li>
+						</ul>
+					</div>
+
+					<div class="navegador" id="demo">
+						<div class="navegador-barra">
+							<div class="navegador-puntos" aria-hidden="true"><span></span><span></span><span></span></div>
+							<div class="navegador-url" data-i18n="inicio.demo_url">tu-sitio-favorito.com</div>
+							<div class="navegador-extensiones">
+								<span class="icono-barra" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" /></svg>
+								</span>
+								<span class="icono-barra extension" title="Simple Timer">
+									<img src="img/icon128.png" alt="" data-demo-icono />
+									<span class="badge" data-demo-badge hidden></span>
+								</span>
+							</div>
+						</div>
+						<div class="navegador-pagina">
+							<div class="esqueleto" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+							<p class="pista-demo">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 7l-10 10" /><path d="M8 7l9 0l0 9" /></svg>
+								<span data-i18n="inicio.demo_pista">¡Pruébala! Escribe un tiempo, como <strong>10s</strong> o <strong>2,5</strong>, y presiona play o Enter.</span>
+							</p>
+							<div class="popup" data-demo aria-label="Demostración de Simple Timer" data-i18n-attr="aria-label:comun.demo_aria" role="group">
+								<noscript><img src="img/captura-dos-timers.png" alt="Captura de Simple Timer" /></noscript>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Funciones -->
+			<section class="seccion seccion-alterna" id="funciones">
+				<div class="container">
+					<div class="seccion-cabecera">
+						<h2 data-i18n="inicio.funciones_titulo">Todo lo que necesitas, nada que estorbe</h2>
+						<p data-i18n="inicio.funciones_sub">Simple Timer hace una sola cosa y la hace bien: medir el tiempo mientras tú haces lo importante.</p>
+					</div>
+					<div class="grilla-funciones">
+						<article class="tarjeta">
+							<div class="tarjeta-icono">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l-8 4l8 4l8 -4l-8 -4" /><path d="M4 12l8 4l8 -4" /><path d="M4 16l8 4l8 -4" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f1_titulo">Cinco temporizadores a la vez</h3>
+							<p data-i18n="inicio.f1_texto">Cada uno se inicia, pausa y detiene por separado. Lleva la reunión, el descanso y el horno al mismo tiempo.</p>
+						</article>
+						<article class="tarjeta">
+							<div class="tarjeta-icono">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f2_titulo">El tiempo siempre a la vista</h3>
+							<p data-i18n="inicio.f2_texto">El icono muestra los minutos que quedan (<span class="badge-ejemplo">12</span>) o cuántos temporizadores hay activos (<span class="badge-ejemplo">3-T</span>). Se pone gris (<span class="badge-ejemplo pausado">12</span>) cuando están en pausa.</p>
+						</article>
+						<article class="tarjeta">
+							<div class="tarjeta-icono verde">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f3_titulo">Te avisa aunque no estés mirando</h3>
+							<p data-i18n="inicio.f3_texto">Al terminar aparece una notificación del sistema, incluso con el navegador minimizado. No se cierra hasta que la veas.</p>
+						</article>
+						<article class="tarjeta">
+							<div class="tarjeta-icono">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z" /><path d="M6 10l0 .01" /><path d="M10 10l0 .01" /><path d="M14 10l0 .01" /><path d="M18 10l0 .01" /><path d="M6 14l0 .01" /><path d="M18 14l0 .01" /><path d="M10 14l4 .01" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f4_titulo">Escribe el tiempo como quieras</h3>
+							<p data-i18n="inicio.f4_texto">Minutos con decimales (<code>2,5</code> son 2:30) o segundos con una s (<code>90s</code>). Presiona Enter y listo.</p>
+						</article>
+						<article class="tarjeta">
+							<div class="tarjeta-icono">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 7h11" /><path d="M6.5 17h11" /><path d="M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1z" /><path d="M6 4v2a6 6 0 1 0 12 0v-2a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1z" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f5_titulo">Sigue contando en segundo plano</h3>
+							<p data-i18n="inicio.f5_texto">Cierra el popup y sigue navegando: el temporizador no se detiene. Al volver a abrirlo verás el tiempo exacto que queda.</p>
+						</article>
+						<article class="tarjeta">
+							<div class="tarjeta-icono verde">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" /><path d="M9 12l2 2l4 -4" /></svg>
+							</div>
+							<h3 data-i18n="inicio.f6_titulo">Privada y liviana</h3>
+							<p data-i18n="inicio.f6_texto">Solo pide tres permisos: notificaciones, almacenamiento y alarmas. No lee las páginas que visitas ni envía tus datos a ningún lado.</p>
+						</article>
+					</div>
+				</div>
+			</section>
+
+			<!-- Formatos de tiempo -->
+			<section class="seccion" id="formatos">
+				<div class="container formatos">
+					<div class="formatos-texto">
+						<span class="etiqueta" data-i18n="inicio.formatos_etiqueta">Cómo usarla</span>
+						<h2 data-i18n="inicio.formatos_titulo">Escribe el tiempo a tu manera</h2>
+						<p data-i18n="inicio.formatos_texto">
+							Escribe un número y se interpreta como minutos. Si necesitas algo más preciso, usa decimales: la parte decimal es una fracción de minuto. Para segundos, agrega una <code>s</code> al final.
+						</p>
+						<p data-i18n="inicio.formatos_probar">Haz clic en cualquier ejemplo para probarlo en la demo.</p>
+						<p class="nota" data-i18n="inicio.formatos_nota">
+							Acepta coma o punto y hasta dos decimales. El sufijo de segundos puede ser <code>s</code>, <code>seg</code> o <code>segundos</code>, con o sin espacio.
+						</p>
+					</div>
+					<table class="tabla-formatos">
+						<thead>
+							<tr>
+								<th data-i18n="inicio.tabla_escribes">Escribes</th>
+								<th data-i18n="inicio.tabla_dura">Dura</th>
+								<th data-i18n="inicio.tabla_por_que">Por qué</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><button class="chip" type="button" data-probar="25"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>25</button></td>
+								<td>25:00</td>
+								<td data-i18n="inicio.ej_25">Minutos enteros</td>
+							</tr>
+							<tr>
+								<td><button class="chip" type="button" data-probar="2,5"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>2,5</button></td>
+								<td>2:30</td>
+								<td data-i18n="inicio.ej_2_5">Dos minutos y medio</td>
+							</tr>
+							<tr>
+								<td><button class="chip" type="button" data-probar=",75"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>,75</button></td>
+								<td>0:45</td>
+								<td data-i18n="inicio.ej_075">Puedes omitir el cero</td>
+							</tr>
+							<tr>
+								<td><button class="chip" type="button" data-probar="0,1"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>0,1</button></td>
+								<td>0:06</td>
+								<td data-i18n="inicio.ej_0_1">Un décimo de minuto</td>
+							</tr>
+							<tr>
+								<td><button class="chip" type="button" data-probar="10s"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>10s</button></td>
+								<td>0:10</td>
+								<td data-i18n="inicio.ej_10s">Segundos con una s</td>
+							</tr>
+							<tr>
+								<td><button class="chip" type="button" data-probar="90 seg"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16l14 -8z" /></svg>90 seg</button></td>
+								<td>1:30</td>
+								<td data-i18n="inicio.ej_90seg">Más de 60 segundos también vale</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
+
+			<!-- Capturas -->
+			<section class="seccion seccion-alterna" id="capturas">
+				<div class="container">
+					<div class="seccion-cabecera">
+						<h2 data-i18n="inicio.capturas_titulo">Así se ve en tu navegador</h2>
+						<p data-i18n="inicio.capturas_sub">Un popup pequeño junto a la barra de direcciones, siempre a mano.</p>
+					</div>
+					<div class="galeria">
+						<figure class="principal">
+							<img src="img/captura-navegador.png" width="1280" height="800" loading="lazy" alt="Simple Timer abierto en Chrome, con cinco tiempos listos para iniciar" data-i18n-attr="alt:inicio.cap1_alt" />
+						</figure>
+						<figure>
+							<img src="img/captura-un-timer.png" width="640" height="400" loading="lazy" alt="Un temporizador corriendo, el icono muestra 3 minutos" data-i18n-attr="alt:inicio.cap2_alt" />
+							<figcaption data-i18n="inicio.cap2">Un temporizador: el icono muestra los minutos</figcaption>
+						</figure>
+						<figure>
+							<img src="img/captura-dos-timers.png" width="640" height="400" loading="lazy" alt="Dos temporizadores corriendo, el icono muestra 2-T" data-i18n-attr="alt:inicio.cap3_alt" />
+							<figcaption data-i18n="inicio.cap3">Varios: el icono cuenta cuántos hay</figcaption>
+						</figure>
+						<figure>
+							<img src="img/captura-cuatro-timers.png" width="640" height="400" loading="lazy" alt="Cuatro temporizadores corriendo a la vez" data-i18n-attr="alt:inicio.cap4_alt" />
+							<figcaption data-i18n="inicio.cap4">Hasta cinco al mismo tiempo</figcaption>
+						</figure>
+					</div>
+				</div>
+			</section>
+
+			<!-- Preguntas frecuentes -->
+			<section class="seccion" id="preguntas">
+				<div class="container">
+					<div class="seccion-cabecera">
+						<h2 data-i18n="inicio.preguntas_titulo">Preguntas frecuentes</h2>
+					</div>
+					<div class="preguntas">
+						<details>
+							<summary data-i18n="inicio.p1">¿En qué navegadores funciona?</summary>
+							<div><p data-i18n="inicio.r1">En Chrome, Edge, Opera, Brave y cualquier navegador basado en Chromium que pueda instalar extensiones de la Chrome Web Store.</p></div>
+						</details>
+						<details>
+							<summary data-i18n="inicio.p2">¿Suena una alarma al terminar?</summary>
+							<div><p data-i18n="inicio.r2">Simple Timer te avisa con una notificación del sistema, que suena o no según cómo tengas configuradas las notificaciones en tu computador.</p></div>
+						</details>
+						<details>
+							<summary data-i18n="inicio.p3">No me aparecen las notificaciones, ¿qué hago?</summary>
+							<div>
+								<p data-i18n="inicio.r3">Revisa que tu sistema permita las notificaciones del navegador:</p>
+								<ul>
+									<li data-i18n="inicio.r3_windows"><strong>Windows:</strong> Configuración → Sistema → Notificaciones. Activa las de tu navegador y desactiva «No molestar».</li>
+									<li data-i18n="inicio.r3_mac"><strong>macOS:</strong> Configuración del Sistema → Notificaciones → tu navegador, y permite las notificaciones.</li>
+								</ul>
+							</div>
+						</details>
+						<details>
+							<summary data-i18n="inicio.p4">¿Qué pasa si cierro el popup?</summary>
+							<div><p data-i18n="inicio.r4">Nada: el temporizador sigue corriendo y el icono sigue mostrando el tiempo. El popup es solo una ventana para verlo y controlarlo.</p></div>
+						</details>
+						<details>
+							<summary data-i18n="inicio.p5">¿Es gratis? ¿Recoge mis datos?</summary>
+							<div><p data-i18n="inicio.r5">Es gratis, sin anuncios y de código abierto. Los temporizadores se guardan solo en tu navegador y la extensión no envía datos a ningún servidor. Puedes revisar el código en <a href="https://github.com/SuKuShaing/Extension-Simple-Timer">GitHub</a>.</p></div>
+						</details>
+					</div>
+				</div>
+			</section>
+
+			<!-- Llamada final -->
+			<section class="banda">
+				<div class="container">
+					<h2 data-i18n="inicio.banda_titulo">Empieza a medir tu tiempo hoy</h2>
+					<p data-i18n="inicio.banda_texto">Se instala en segundos y no necesita cuenta. Fíjala en la barra y tendrás tus temporizadores siempre a un clic.</p>
+					<a class="btn btn-primario" href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M12 9h8.4" /><path d="M14.598 13.5l-4.2 7.275" /><path d="M9.402 13.5l-4.2 -7.275" /></svg>
+						<span data-i18n="comun.instalar">Añadir al navegador, es gratis</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<footer class="pie">
+			<div class="container">
+				<span data-i18n="comun.creada_por">Creada por <a href="https://www.linkedin.com/in/sebastiansanhuezatapia/">Sebastián Sanhueza Tapia</a></span>
+				<ul>
+					<li><a href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe" data-i18n="comun.web_store">Chrome Web Store</a></li>
+					<li><a href="https://github.com/SuKuShaing/Extension-Simple-Timer" data-i18n="comun.codigo">Código en GitHub</a></li>
+				</ul>
+				<p class="atribucion" data-i18n="comun.atribucion">
+					Icono basado en <a href="https://tabler.io/icons/icon/stopwatch">Stopwatch de Tabler Icons</a>, bajo licencia MIT.
+				</p>
+			</div>
+		</footer>
+	</body>
+</html>

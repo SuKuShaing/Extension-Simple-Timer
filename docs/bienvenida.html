@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title data-i18n="bienvenida.titulo">Te damos la bienvenida a Simple Timer</title>
+		<meta name="robots" content="noindex" />
+		<link rel="icon" type="image/png" href="img/favicon.png" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<script src="js/i18n.js"></script>
+		<script src="js/demo.js" defer></script>
+	</head>
+	<body>
+		<header class="cabecera">
+			<div class="container">
+				<a class="marca" href="./">
+					<img src="img/icon128.png" alt="" width="32" height="32" />
+					Simple Timer
+				</a>
+				<button class="selector-idioma" type="button" data-selector-idioma>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h7" /><path d="M9 3v2c0 4.418 -2.239 8 -5 8" /><path d="M5 9c0 2.144 2.952 3.908 6.7 4" /><path d="M12 20l4 -9l4 9" /><path d="M19.1 18h-6.2" /></svg>
+					<span data-idioma-destino>EN</span>
+				</button>
+			</div>
+		</header>
+
+		<main>
+			<section class="bienvenida-hero container">
+				<img class="logo-grande" src="img/icon_active128.png" alt="" width="96" height="96" />
+				<h1 data-i18n="bienvenida.h1">¡Gracias por instalar Simple Timer!</h1>
+				<p data-i18n="bienvenida.sub">Ya está lista para usar. Sigue estos tres pasos y tendrás tus temporizadores siempre a un clic.</p>
+			</section>
+
+			<section class="seccion" style="padding-top: 40px">
+				<div class="container pasos">
+					<!-- Paso 1: fijar el icono -->
+					<article class="paso">
+						<div>
+							<h2 data-i18n="bienvenida.p1_titulo">Fija el icono en la barra</h2>
+							<p data-i18n="bienvenida.p1_texto">
+								Haz clic en el botón de extensiones, la pieza de rompecabezas junto a la barra de direcciones, y luego en el alfiler junto a <strong>Simple Timer</strong>.
+							</p>
+							<p data-i18n="bienvenida.p1_por_que">Así verás los minutos restantes en el icono sin abrir nada.</p>
+							<p class="nota" data-i18n="bienvenida.p1_edge">En Edge, el botón junto a la extensión es un ojo: «Mostrar en la barra de herramientas».</p>
+						</div>
+						<div class="paso-visual">
+							<div class="fijar" aria-hidden="true">
+								<div class="navegador-barra">
+									<div class="navegador-url" style="max-width: 140px"></div>
+									<span class="icono-barra resaltar">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1" /></svg>
+									</span>
+								</div>
+								<div class="menu-extensiones">
+									<div class="menu-extensiones-titulo" data-i18n="bienvenida.menu_titulo">Extensiones</div>
+									<div class="menu-extension">
+										<span class="falso-icono"></span>
+										<span class="falso-nombre"></span>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4" /><path d="M9 15l-4.5 4.5" /><path d="M14.5 4l5.5 5.5" /></svg>
+									</div>
+									<div class="menu-extension destacada">
+										<img src="img/icon128.png" alt="" />
+										<span>Simple Timer</span>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4" /><path d="M9 15l-4.5 4.5" /><path d="M14.5 4l5.5 5.5" /></svg>
+									</div>
+									<div class="menu-extension">
+										<span class="falso-icono"></span>
+										<span class="falso-nombre" style="flex-basis: 80px"></span>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4" /><path d="M9 15l-4.5 4.5" /><path d="M14.5 4l5.5 5.5" /></svg>
+									</div>
+								</div>
+							</div>
+						</div>
+					</article>
+
+					<!-- Paso 2: probar -->
+					<article class="paso">
+						<div>
+							<h2 data-i18n="bienvenida.p2_titulo">Escribe un tiempo y dale play</h2>
+							<p data-i18n="bienvenida.p2_texto">Abre Simple Timer, escribe un tiempo y presiona play o Enter. Puedes practicar aquí mismo:</p>
+							<ul>
+								<li data-i18n="bienvenida.p2_ej1"><code>25</code> son 25 minutos</li>
+								<li data-i18n="bienvenida.p2_ej2"><code>2,5</code> son 2 minutos y 30 segundos</li>
+								<li data-i18n="bienvenida.p2_ej3"><code>30s</code> son 30 segundos</li>
+							</ul>
+						</div>
+						<div class="paso-visual">
+							<div class="popup" data-demo role="group" aria-label="Demostración de Simple Timer" data-i18n-attr="aria-label:comun.demo_aria"></div>
+						</div>
+					</article>
+
+					<!-- Paso 3: notificaciones -->
+					<article class="paso">
+						<div>
+							<h2 data-i18n="bienvenida.p3_titulo">Revisa que lleguen las notificaciones</h2>
+							<p data-i18n="bienvenida.p3_texto">
+								Cuando un temporizador termina, Simple Timer te avisa con una notificación del sistema. Si tu computador las bloquea, no la verás.
+							</p>
+							<p data-i18n="bienvenida.p3_prueba">Haz la prueba: inicia un temporizador de <code>10s</code> y espera.</p>
+						</div>
+						<div class="consejos-sistema">
+							<div class="consejo">
+								<strong>Windows</strong>
+								<p data-i18n="bienvenida.p3_windows">Configuración → Sistema → Notificaciones. Activa las de tu navegador y desactiva «No molestar».</p>
+							</div>
+							<div class="consejo">
+								<strong>macOS</strong>
+								<p data-i18n="bienvenida.p3_mac">Configuración del Sistema → Notificaciones → tu navegador. Permite las notificaciones y elige el estilo «Alertas» para que no desaparezcan solas.</p>
+							</div>
+						</div>
+					</article>
+				</div>
+
+				<p class="centrado" style="margin-top: 48px">
+					<a class="btn btn-secundario" href="./" data-i18n="bienvenida.ver_todo">Conoce todas las funciones</a>
+				</p>
+			</section>
+		</main>
+
+		<footer class="pie">
+			<div class="container">
+				<span data-i18n="comun.creada_por">Creada por <a href="https://www.linkedin.com/in/sebastiansanhuezatapia/">Sebastián Sanhueza Tapia</a></span>
+				<ul>
+					<li><a href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe" data-i18n="comun.web_store">Chrome Web Store</a></li>
+					<li><a href="https://github.com/SuKuShaing/Extension-Simple-Timer" data-i18n="comun.codigo">Código en GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+	</body>
+</html>

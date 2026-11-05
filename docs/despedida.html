@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title data-i18n="despedida.titulo">Simple Timer se desinstaló</title>
+		<meta name="robots" content="noindex" />
+		<link rel="icon" type="image/png" href="img/favicon.png" />
+		<link rel="stylesheet" href="css/styles.css" />
+		<script src="js/i18n.js"></script>
+		<script src="js/despedida.js" defer></script>
+	</head>
+	<body>
+		<header class="cabecera">
+			<div class="container">
+				<a class="marca" href="./">
+					<img src="img/icon128.png" alt="" width="32" height="32" />
+					Simple Timer
+				</a>
+				<button class="selector-idioma" type="button" data-selector-idioma>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h7" /><path d="M9 3v2c0 4.418 -2.239 8 -5 8" /><path d="M5 9c0 2.144 2.952 3.908 6.7 4" /><path d="M12 20l4 -9l4 9" /><path d="M19.1 18h-6.2" /></svg>
+					<span data-idioma-destino>EN</span>
+				</button>
+			</div>
+		</header>
+
+		<main class="container">
+			<div class="despedida">
+				<div class="despedida-cabecera">
+					<img class="logo-grande" src="img/icon128.png" alt="" width="80" height="80" />
+					<h1 data-i18n="despedida.h1">Lamentamos verte partir</h1>
+					<p data-i18n="despedida.sub">Simple Timer se desinstaló. ¿Nos cuentas por qué? Toma menos de un minuto y nos ayuda a mejorarla.</p>
+				</div>
+
+				<form class="formulario" id="formulario-feedback" novalidate>
+					<fieldset>
+						<legend data-i18n="despedida.motivo">¿Por qué la desinstalaste?</legend>
+						<div class="opciones">
+							<!-- Los valores quedan en español para que los correos lleguen siempre igual -->
+							<label class="opcion">
+								<input type="radio" name="motivo" value="Ya no la necesito" />
+								<span data-i18n="despedida.m_no_necesito">Ya no la necesito</span>
+							</label>
+							<label class="opcion">
+								<input type="radio" name="motivo" value="No funcionaba como esperaba" />
+								<span data-i18n="despedida.m_no_funcionaba">No funcionaba como esperaba</span>
+							</label>
+							<label class="opcion">
+								<input type="radio" name="motivo" value="Le faltaba una función" />
+								<span data-i18n="despedida.m_faltaba">Le faltaba una función</span>
+							</label>
+							<label class="opcion">
+								<input type="radio" name="motivo" value="No me llegaban las notificaciones" />
+								<span data-i18n="despedida.m_notificaciones">No me llegaban las notificaciones</span>
+							</label>
+							<label class="opcion">
+								<input type="radio" name="motivo" value="Encontré otra alternativa" />
+								<span data-i18n="despedida.m_alternativa">Encontré otra alternativa</span>
+							</label>
+							<label class="opcion">
+								<input type="radio" name="motivo" value="Otro motivo" />
+								<span data-i18n="despedida.m_otro">Otro motivo</span>
+							</label>
+						</div>
+					</fieldset>
+
+					<div>
+						<label class="campo-titulo" for="comentario">
+							<span data-i18n="despedida.comentario">¿Qué podríamos mejorar?</span>
+							<span class="opcional" data-i18n="despedida.opcional">(opcional)</span>
+						</label>
+						<textarea id="comentario" name="comentario" maxlength="2000" placeholder="Cuéntanos qué pasó o qué te faltó" data-i18n-attr="placeholder:despedida.comentario_placeholder"></textarea>
+					</div>
+
+					<div>
+						<label class="campo-titulo" for="correo">
+							<span data-i18n="despedida.correo">Tu correo</span>
+							<span class="opcional" data-i18n="despedida.opcional">(opcional)</span>
+						</label>
+						<input type="email" id="correo" name="correo" autocomplete="email" placeholder="nombre@correo.com" data-i18n-attr="placeholder:despedida.correo_placeholder" />
+						<p class="ayuda" data-i18n="despedida.correo_ayuda">Solo si quieres que te respondamos. No lo usaremos para nada más.</p>
+					</div>
+
+					<!-- Trampa para bots de Web3Forms: oculta para las personas -->
+					<input type="checkbox" name="botcheck" class="trampa" tabindex="-1" autocomplete="off" />
+
+					<p class="estado-envio error" role="alert" hidden data-estado></p>
+
+					<button class="btn btn-primario" type="submit" data-enviar>
+						<span data-i18n="despedida.enviar">Enviar comentario</span>
+					</button>
+				</form>
+
+				<div class="formulario gracias-envio" hidden data-gracias tabindex="-1">
+					<div class="check">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10" /></svg>
+					</div>
+					<h2 data-i18n="despedida.gracias_titulo">¡Gracias por contarnos!</h2>
+					<p data-i18n="despedida.gracias_texto">Leemos cada comentario. Si dejaste tu correo, puede que te escribamos.</p>
+				</div>
+
+				<p class="reinstalar" data-i18n="despedida.reinstalar">
+					¿Fue un error? <a href="https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe">Vuelve a instalar Simple Timer</a>
+				</p>
+			</div>
+		</main>
+
+		<footer class="pie">
+			<div class="container">
+				<span data-i18n="comun.creada_por">Creada por <a href="https://www.linkedin.com/in/sebastiansanhuezatapia/">Sebastián Sanhueza Tapia</a></span>
+				<ul>
+					<li><a href="./" data-i18n="comun.inicio">Inicio</a></li>
+					<li><a href="https://github.com/SuKuShaing/Extension-Simple-Timer" data-i18n="comun.codigo">Código en GitHub</a></li>
+				</ul>
+			</div>
+		</footer>
+	</body>
+</html>

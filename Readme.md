@@ -3,6 +3,7 @@
 Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tarea.
 
 [Extensión Disponible aquí](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
+[Sitio web](https://sukushaing.github.io/Extension-Simple-Timer/)
 Disponible en Chrome, Edge, Opera y Brave
 
 Imagen de la nueva versión de la interfaz de la extensión:
@@ -16,9 +17,12 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] una web landing donde se muestre el producto
--   [ ] una página dentro de la web que sea el gracias
+-   [ ] publicar la web antes de subir la 1.11
+-   [ ] Traducir la extensión al inglés con `_locales` (la web ya es bilingüe, pero la notificación y los textos de la extensión siguen en español)
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Activar GitHub Pages (Settings → Pages → Source: "GitHub Actions")
+-   [x] Una web landing donde se muestre el producto, en español e inglés, con una demo funcional (`docs/`)
+-   [x] Una página de bienvenida que se abre al instalar y explica cómo fijar el icono, y una de despedida al desinstalar que pide feedback
 -   [x] Pedir una reseña con una notificación 10 s después de que termine un temporizador: al uso 10 y en cada múltiplo de 100. Si el usuario hizo clic en "Dejar reseña", solo en cada múltiplo de 1000. El texto se elige al azar entre 10
 -   [x] Bug: `onInstalled` no esperaba a `stateRestored`, así que si la restauración terminaba después podía volver a cargar los temporizadores recién borrados y sus alarmas, y sobrevivían a la recarga de la extensión. Ahora `onInstalled` espera la restauración antes de detenerlos
 -   [x] Bug: `start_timer`, `pause_timer`, `resume_timer` y `reset_timer` no esperaban a `stateRestored`, así que si despertaban al service worker la restauración podía pisar el cambio. Ahora todas las acciones del listener de mensajes esperan la restauración
@@ -57,6 +61,8 @@ Imagen de la nueva versión de la interfaz de la extensión:
 -   Los decimales siempre son fracción de minuto (`0,1` = 6 s, `2,5` = 2:30)
 -   El badge despierta al service worker solo cuando cambia el minuto, y no mientras el temporizador está pausado
 -   Se corrige que una acción o la reinstalación pudiera ser pisada por la restauración del estado
+-   Al instalar se abre una página de bienvenida que explica cómo fijar el icono, y al desinstalar una que pide feedback
+-   El logo del popup lleva al sitio web de la extensión
 
 #### Versión 1.10 (Disponible en Chrome Web Store)
 

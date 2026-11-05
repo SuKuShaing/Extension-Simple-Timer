@@ -61,6 +61,25 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 
 Cualquier otro valor devuelve 0 y no inicia el temporizador. El listener `input` del campo deja pasar letras y espacios para el formato de segundos.
 
+### Instalación y desinstalación
+
+- `onInstalled` abre `bienvenida.html` solo si `reason` es `install`. Las actualizaciones no abren nada.
+- `setUninstallURL` se registra en cada arranque del worker con `despedida.html?v=<versión>`.
+- Ambas URLs salen de `WEB_URL` (`background.js`) y apuntan a GitHub Pages: si la web no está publicada, abren un 404.
+- Al cargar la extensión descomprimida por primera vez cuenta como `install` y abre la bienvenida. Recargarla cuenta como `update`.
+
+## Web (`docs/`)
+
+Landing, bienvenida y despedida en HTML, CSS y JS sin frameworks, publicadas en `https://sukushaing.github.io/Extension-Simple-Timer/`.
+
+- **Publicación:** `.github/workflows/pages.yml` sube solo `docs/` a GitHub Pages en cada push a `main` que toque `docs/`, o a mano desde Actions. En el repo, Pages debe tener como fuente "GitHub Actions".
+
+- **Probar en local:** `py -m http.server 8765` dentro de `docs/`. Abrir los HTML con `file://` no sirve para el formulario.
+- **Idiomas (`js/i18n.js`):** el español está en el HTML y el inglés en el diccionario `EN`. Un texto nuevo necesita `data-i18n="clave"` (o `data-i18n-attr="atributo:clave"`) y su entrada en `EN`. Los textos que genera JS van en `TEXTOS_JS`, en ambos idiomas.
+- **Demo (`js/demo.js`):** réplica del popup que copia `parseTimeInput`, el filtro del input y las reglas del badge. Si cambian en la extensión, hay que actualizar la copia.
+- **Feedback (`js/despedida.js`):** envía a Web3Forms, que reenvía cada respuesta al correo del usuario. La access key (`WEB3FORMS_ACCESS_KEY`) es pública por diseño: solo permite enviar a ese correo.
+- **Empaquetar:** `docs/`, `.github/` y `.git/` no son parte de la extensión. Hay que excluirlos del `.zip` que se sube a la Web Store.
+
 ## Restricciones y puntos a cuidar
 
 - **Número de temporizadores:** está repetido en `MAX_TIMERS` (`background.js`), en dos bucles `i <= 5` de `popup.js` y en las secciones de `popup.html`, escritas a mano. `TimerController` enlaza por IDs con el patrón `start-btn-<id>`, `time-input-<id>`, etc. Para cambiarlo hay que tocar los tres archivos.

@@ -560,12 +560,27 @@ function resumeTimer(id) {
 }
 
 /**
+ * Páginas de la web (docs/, publicada en GitHub Pages).
+ * La bienvenida se abre solo al instalar, no al actualizar.
+ * La de despedida la abre Chrome al desinstalar; lleva la versión para el feedback.
+ */
+const WEB_URL = "https://sukushaing.github.io/Extension-Simple-Timer";
+const WELCOME_URL = `${WEB_URL}/bienvenida.html`;
+const UNINSTALL_URL = `${WEB_URL}/despedida.html?v=${chrome.runtime.getManifest().version}`;
+
+// Se registra en cada arranque del worker: es idempotente y no requiere permisos
+chrome.runtime.setUninstallURL(UNINSTALL_URL);
+
+/**
  * Evento que se ejecuta cuando la extensión se instala o actualiza.
  * Resetea todos los temporizadores y deja el sistema limpio al instalar.
  * Espera a que se restaure el estado: si no, la restauración podría terminar después
  * y volver a cargar los temporizadores recién borrados junto con sus alarmas.
  */
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+    if (reason === chrome.runtime.OnInstalledReason.INSTALL) {
+        chrome.tabs.create({ url: WELCOME_URL });
+    }
     stateRestored.then(() => {
         for (let i = 1; i <= MAX_TIMERS; i++) stopTimer(i);
         // Detiene cualquier alarma de badge que pueda estar corriendo
