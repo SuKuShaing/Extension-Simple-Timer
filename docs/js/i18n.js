@@ -65,7 +65,7 @@
 		"inicio.formatos_titulo": "Type the time your way",
 		"inicio.formatos_texto": "Type a number and it's read as minutes. Need more precision? Use decimals: the decimal part is a fraction of a minute. For seconds, add an <code>s</code> at the end.",
 		"inicio.formatos_probar": "Click any example to try it in the demo.",
-		"inicio.formatos_nota": "Works with a period or a comma and up to two decimals. Seconds can be written as <code>10s</code> or <code>10 s</code>.",
+		"inicio.formatos_nota": "Works with a period or a comma and up to two decimals. Seconds can be written as <code>10s</code>, <code>10 sec</code> or <code>10 seconds</code>.",
 		"inicio.tabla_escribes": "You type",
 		"inicio.tabla_dura": "Lasts",
 		"inicio.tabla_por_que": "Why",

@@ -36,7 +36,7 @@
 		if (!inputValue) return 0;
 		const value = inputValue.trim().toLowerCase();
 
-		const secondsMatch = value.match(/^(\d+)\s*(?:s|segs?|segundos?)$/);
+		const secondsMatch = value.match(/^(\d+)\s*(?:s|segs?|segundos?|secs?|seconds?)$/);
 		if (secondsMatch) return parseInt(secondsMatch[1], 10) * 1000;
 
 		const normalizedValue = value.replace(",", ".");

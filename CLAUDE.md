@@ -46,7 +46,7 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 
 - `notify` llama a `registerCompletedTimer`, que cuenta los temporizadores terminados en `reviewState` (`chrome.storage.local`), separado de `timersState`.
 - Se pide la reseña en el uso 10 y en cada múltiplo de 100. Si el usuario hizo clic en "Dejar reseña" (`reviewClicked`), solo en cada múltiplo de 1000 (`shouldRequestReview`).
-- La notificación (`review-request`) sale 10 s después de "¡Tiempo terminado!" con un `setTimeout`, porque una alarma no puede durar menos de 30 s. El texto se elige al azar de `REVIEW_MESSAGES`.
+- La notificación (`review-request`) sale 10 s después de "¡Tiempo terminado!" con un `setTimeout`, porque una alarma no puede durar menos de 30 s. El texto se elige al azar entre los `REVIEW_MESSAGES_COUNT` de `_locales` (ver "Idiomas").
 - Toda lectura o escritura de `reviewState` pasa por `updateReviewState`, que las encadena para que dos temporizadores que terminan a la vez no pisen el contador.
 - Para probarla sin terminar 10 temporizadores, en la consola del service worker: `chrome.storage.local.set({ reviewState: { completedTimers: 9, reviewClicked: false } })`, y después terminar un temporizador de `1s`.
 
@@ -57,9 +57,19 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 | Formato | Regla | Ejemplos |
 | --- | --- | --- |
 | Minutos | Coma o punto, máximo 2 decimales. El decimal es fracción de minuto | `2,5` = 2:30, `0,1` = 6 s, `,75` = 45 s, `1,30` = 1:18 |
-| Segundos | Entero con sufijo `s`, `seg`, `segs`, `segundo` o `segundos`, con o sin espacio, sin distinguir mayúsculas | `10s`, `30 seg`, `90 segundos` = 1:30 |
+| Segundos | Entero con sufijo `s`, `seg`, `segs`, `segundo`, `segundos`, `sec`, `secs`, `second` o `seconds`, con o sin espacio, sin distinguir mayúsculas | `10s`, `30 seg`, `30 sec`, `90 segundos` = 1:30 |
 
 Cualquier otro valor devuelve 0 y no inicia el temporizador. El listener `input` del campo deja pasar letras y espacios para el formato de segundos.
+
+### Idiomas (`_locales/`)
+
+- La extensión está en español (`_locales/es`) e inglés (`_locales/en`). Chrome elige según el idioma de su interfaz: cualquier variante de español (`es-CL`, `es-419`…) usa `es`, y cualquier otro idioma usa `en` (`default_locale`).
+- `manifest.json` usa `__MSG_extName__` y `__MSG_extDescription__`. `background.js` lee todos los textos de las notificaciones con `chrome.i18n.getMessage`, incluida la duración (`formatTimeForNotification`).
+- **Popup:** el español escrito en `popup.html` es solo el respaldo. `applyTranslations` (`popup.js`) reemplaza cada atributo indicado en `data-i18n-attr="atributo:clave,…"`, la misma convención de la web.
+- Un texto nuevo necesita su clave en **los dos** `messages.json`. Si falta en `es`, Chrome muestra la de `en`; si falta en ambos, `getMessage` devuelve `""`.
+- Los textos de la petición de reseña son `reviewTitle<n>` y `reviewMessage<n>`, con n de 1 a `REVIEW_MESSAGES_COUNT`. Para agregar uno, súmalo en ambos idiomas y sube la constante.
+- Los logs (`[TIMER DEBUG]`) y los comentarios siguen solo en español.
+- **Probar en inglés:** cambiar el idioma de la interfaz de Chrome (`chrome://settings/languages` → "Mostrar Google Chrome en este idioma") y reiniciarlo. Los cambios en `messages.json` exigen recargar la extensión.
 
 ### Instalación y desinstalación
 
@@ -90,5 +100,5 @@ Landing, bienvenida y despedida en HTML, CSS y JS sin frameworks, publicadas en 
 ## Convenciones
 
 - **Git:** solo el usuario hace commits y push. No ejecutes `git commit` ni `git push`; deja los cambios en el árbol de trabajo para que los revise.
-- El código, los comentarios, los textos de la interfaz y los commits están en español.
+- El código, los comentarios y los commits están en español. Los textos que ve el usuario van en `_locales`, en español e inglés.
 - Cada versión nueva actualiza `version` en `manifest.json` y agrega una entrada en la sección "Versiones" de `Readme.md`. Las tareas se llevan en la lista "To Do" del mismo archivo.

@@ -164,7 +164,8 @@ function stopBadgeUpdateAlarms() {
 }
 
 /**
- * Formatea el tiempo para mostrar en la notificación de manera legible
+ * Formatea el tiempo para mostrar en la notificación de manera legible,
+ * en el idioma del navegador (`_locales`)
  * @param {number} totalMs - Tiempo total en milisegundos
  * @returns {string} Tiempo formateado para la notificación
  */
@@ -173,14 +174,24 @@ function formatTimeForNotification(totalMs) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
+    const minutesText = chrome.i18n.getMessage(
+        minutes === 1 ? "durationMinute" : "durationMinutes",
+        [String(minutes)]
+    );
+    const secondsText = chrome.i18n.getMessage(
+        seconds === 1 ? "durationSecond" : "durationSeconds",
+        [String(seconds)]
+    );
+
     if (minutes === 0) {
-        return `${seconds} segundo${seconds !== 1 ? "s" : ""}`;
+        return secondsText;
     } else if (seconds === 0) {
-        return `${minutes} minuto${minutes !== 1 ? "s" : ""}`;
+        return minutesText;
     } else {
-        return `${minutes} minuto${
-            minutes !== 1 ? "s" : ""
-        } y ${seconds} segundo${seconds !== 1 ? "s" : ""}`;
+        return chrome.i18n.getMessage("durationMinutesAndSeconds", [
+            minutesText,
+            secondsText,
+        ]);
     }
 }
 
@@ -304,49 +315,10 @@ const REVIEW_NOTIFICATION_ID = "review-request";
 // worker sigue vivo 30 s después del último evento, y una alarma no puede durar menos de 30 s.
 const REVIEW_DELAY_MS = 10000;
 
+// Los textos están en `_locales/<idioma>/messages.json` como `reviewTitle<n>` y
+// `reviewMessage<n>`, con n de 1 a REVIEW_MESSAGES_COUNT.
 // No mencionan cuántos temporizadores terminó el usuario, para que no se sienta vigilado
-const REVIEW_MESSAGES = [
-    {
-        title: "¿Te está sirviendo Simple Timer?",
-        message: "Déjanos una reseña en la Chrome Web Store.",
-    },
-    {
-        title: "¿Te gusta Simple Timer?",
-        message: "Déjanos tu reseña, nos ayuda a seguir mejorando.",
-    },
-    {
-        title: "Cuéntale a los demás sobre Simple Timer",
-        message: "Tu reseña ayuda a que otras personas lo encuentren.",
-    },
-    {
-        title: "Cuéntanos cuánto te gusta Simple Timer",
-        message: "Déjanos una reseña en la Chrome Web Store.",
-    },
-    {
-        title: "¿Qué te parece Simple Timer?",
-        message: "Tu opinión nos importa, déjanos una reseña.",
-    },
-    {
-        title: "¿Simple Timer te ayuda con tu tiempo?",
-        message: "Cuéntalo en una reseña en la Chrome Web Store.",
-    },
-    {
-        title: "Ayúdanos a crecer",
-        message: "Una reseña de Simple Timer marca la diferencia.",
-    },
-    {
-        title: "¿Simple Timer te ha sido útil?",
-        message: "Compártelo con una reseña en la Chrome Web Store.",
-    },
-    {
-        title: "Tu opinión cuenta",
-        message: "Déjale una reseña a Simple Timer, solo toma un minuto.",
-    },
-    {
-        title: "¿Recomendarías Simple Timer?",
-        message: "Déjanos una reseña y cuéntale a otros.",
-    },
-];
+const REVIEW_MESSAGES_COUNT = 10;
 
 // Encadena las lecturas y escrituras de `reviewState` para que dos temporizadores que
 // terminan a la vez (o un clic simultáneo) no se pisen el contador
@@ -404,14 +376,16 @@ function registerCompletedTimer() {
  * Muestra la notificación que pide la reseña, con un texto al azar.
  */
 function showReviewRequest() {
-    const text =
-        REVIEW_MESSAGES[Math.floor(Math.random() * REVIEW_MESSAGES.length)];
+    const n = Math.floor(Math.random() * REVIEW_MESSAGES_COUNT) + 1;
     chrome.notifications.create(REVIEW_NOTIFICATION_ID, {
         type: "basic",
         iconUrl: "Iconos/icon128.png",
-        title: text.title,
-        message: text.message,
-        buttons: [{ title: "Dejar reseña" }, { title: "Ahora no" }],
+        title: chrome.i18n.getMessage(`reviewTitle${n}`),
+        message: chrome.i18n.getMessage(`reviewMessage${n}`),
+        buttons: [
+            { title: chrome.i18n.getMessage("reviewButtonLeave") },
+            { title: chrome.i18n.getMessage("reviewButtonLater") },
+        ],
         priority: 1,
         silent: true, // "¡Tiempo terminado!" ya sonó
     });
@@ -443,14 +417,18 @@ function notify(id, totalTimeMs) {
     // comenté esta función porque no permite reproducir sonidos a menos que el popup esté abierto
     // chrome.runtime.sendMessage({ action: "play_sound", sound: "service-bell.mp3" });
 
-    // Muestra la notificación
-    const displayTime =
-        totalTimeMs > 0 ? formatTimeForNotification(totalTimeMs) : "el tiempo";
+    // Muestra la notificación, en el idioma del navegador
+    const message =
+        totalTimeMs > 0
+            ? chrome.i18n.getMessage("timerFinishedMessage", [
+                  formatTimeForNotification(totalTimeMs),
+              ])
+            : chrome.i18n.getMessage("timerFinishedMessageNoTime");
     chrome.notifications.create({
         type: "basic",
         iconUrl: "Iconos/icon128.png",
-        title: `¡Tiempo terminado!`,
-        message: `Tu temporizador de ${displayTime} ha finalizado.`,
+        title: chrome.i18n.getMessage("timerFinishedTitle"),
+        message,
         priority: 2, // Prioridad alta (0-2)
         requireInteraction: true, // Evita que se oculte automáticamente
         silent: false, // Permite sonido

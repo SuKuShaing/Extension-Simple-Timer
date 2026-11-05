@@ -1,25 +1,29 @@
 # Extensión Simple Timer
 
-Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tarea.
+Cinco temporizadores simples que se pueden usar para medir el tiempo de tus tareas.
 
-[Extensión Disponible aquí](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
-[Sitio web](https://sukushaing.github.io/Extension-Simple-Timer/)
-Disponible en Chrome, Edge, Opera y Brave
+[![Instalar desde la Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Instalar-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/simple-timer/fepcghiedlojkgidicokpnhifnfbmabe)
+[![Sitio web de Simple Timer](https://img.shields.io/badge/Sitio_web-Visitar-006ce0?style=for-the-badge&logo=githubpages&logoColor=white)](https://sukushaing.github.io/Extension-Simple-Timer/)
+
+![Disponible en Chrome, Edge, Opera y Brave](https://img.shields.io/badge/Disponible_en-Chrome_%C2%B7_Edge_%C2%B7_Opera_%C2%B7_Brave-555555?style=flat-square)
 
 Imagen de la nueva versión de la interfaz de la extensión:
+
 ![Imagen de la extensión](./img/1.png)
+
 ![Imagen de la extensión](./img/3.png)
 
 ## Creada por:
 
-[Sebastián Sanhueza Tapia](https://www.linkedin.com/in/sebastiansanhuezatapia/)
-[Repositorio aquí](https://github.com/SuKuShaing/Extension-Simple-Timer)
+[![LinkedIn de Sebastián Sanhueza Tapia](https://img.shields.io/badge/LinkedIn-Sebasti%C3%A1n_Sanhueza_Tapia-0A66C2?style=for-the-badge)](https://www.linkedin.com/in/sebastiansanhuezatapia/)
+[![Repositorio en GitHub](https://img.shields.io/badge/GitHub-Repositorio-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/SuKuShaing/Extension-Simple-Timer)
 
 ## To Do
 
--   [ ] publicar la web antes de subir la 1.11
--   [ ] Traducir la extensión al inglés con `_locales` (la web ya es bilingüe, pero la notificación y los textos de la extensión siguen en español)
+-   [ ] Subir la app
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Traducir la extensión al inglés con `_locales`: el popup, las notificaciones y la petición de reseña se muestran en español o inglés según el idioma del navegador
+-   [x] publicar la web antes de subir la 1.11
 -   [x] Activar GitHub Pages (Settings → Pages → Source: "GitHub Actions")
 -   [x] Una web landing donde se muestre el producto, en español e inglés, con una demo funcional (`docs/`)
 -   [x] Una página de bienvenida que se abre al instalar y explica cómo fijar el icono, y una de despedida al desinstalar que pide feedback
@@ -54,7 +58,7 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ### Versiones
 
-#### Versión 1.11
+#### Versión 1.11 (Disponible en Chrome Web Store)
 
 -   Se pide una reseña en la Chrome Web Store con una notificación, al terminar el temporizador número 10 y después cada 100
 -   Ahora se pueden ingresar segundos con un sufijo: `10s`, `30 seg`, `90 segundos`
@@ -63,8 +67,11 @@ Imagen de la nueva versión de la interfaz de la extensión:
 -   Se corrige que una acción o la reinstalación pudiera ser pisada por la restauración del estado
 -   Al instalar se abre una página de bienvenida que explica cómo fijar el icono, y al desinstalar una que pide feedback
 -   El logo del popup lleva al sitio web de la extensión
+-   La extensión está en español e inglés: se muestra en español si el navegador está en español, y en inglés en cualquier otro idioma
+-   Los segundos también se pueden ingresar con sufijos en inglés: `30 sec`, `90 seconds`
+-   Soporte multi-idioma de la extensión, ingles y español
 
-#### Versión 1.10 (Disponible en Chrome Web Store)
+#### Versión 1.10
 
 -   Se añade una transición a la aparición y desaparición de las líneas diagonales que visualizan el tiempo corriendo
 

@@ -25,8 +25,9 @@ let timerInterval = null;
  * Acepta dos formatos:
  * - Minutos, con hasta 2 decimales que son fracción de minuto (coma o punto):
  *   "2" = 2:00, "2,5" = 2:30, "0,1" = 6 s, ",5" = 30 s, "0,75" = 45 s
- * - Segundos, con un sufijo (s, seg, segs, segundo, segundos), con o sin espacio:
- *   "10s" = 10 s, "30 seg" = 30 s, "90 segundos" = 1:30
+ * - Segundos, con un sufijo en español o inglés (s, seg, segs, segundo, segundos,
+ *   sec, secs, second, seconds), con o sin espacio:
+ *   "10s" = 10 s, "30 seg" = 30 s, "30 sec" = 30 s, "90 segundos" = 1:30
  *
  * El resultado se redondea al segundo más cercano.
  * @param {string} inputValue - Valor ingresado por el usuario
@@ -39,8 +40,10 @@ function parseTimeInput(inputValue) {
 
     const value = inputValue.trim().toLowerCase();
 
-    // Segundos explícitos: "10s", "10 seg", "10 segundos"
-    const secondsMatch = value.match(/^(\d+)\s*(?:s|segs?|segundos?)$/);
+    // Segundos explícitos: "10s", "10 seg", "10 segundos", "10 sec", "10 seconds"
+    const secondsMatch = value.match(
+        /^(\d+)\s*(?:s|segs?|segundos?|secs?|seconds?)$/
+    );
     if (secondsMatch) {
         return parseInt(secondsMatch[1], 10) * 1000;
     }
@@ -359,7 +362,24 @@ function notifyIconState() {
     });
 }
 
+/**
+ * Traduce los textos del popup al idioma del navegador con `_locales`.
+ * Cada elemento indica sus atributos con `data-i18n-attr="atributo:clave,atributo:clave"`,
+ * igual que la web. Si falta una clave, se deja el texto en español del HTML.
+ */
+function applyTranslations() {
+    document.documentElement.lang = chrome.i18n.getUILanguage();
+    document.querySelectorAll("[data-i18n-attr]").forEach((el) => {
+        el.dataset.i18nAttr.split(",").forEach((pair) => {
+            const [attr, key] = pair.split(":").map((s) => s.trim());
+            const text = chrome.i18n.getMessage(key);
+            if (text) el.setAttribute(attr, text);
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    applyTranslations();
     for (let i = 1; i <= 5; i++) {
         new TimerController(i);
     }

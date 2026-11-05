@@ -1,0 +1,112 @@
+{
+    "extName": {
+        "message": "Simple Timer",
+        "description": "Nombre de la extensión"
+    },
+    "extDescription": {
+        "message": "Cinco temporizadores simples e independientes en tu navegador",
+        "description": "Descripción de la extensión"
+    },
+
+    "inputPlaceholder": {
+        "message": "Min",
+        "description": "Placeholder del campo de tiempo"
+    },
+    "inputTitle": {
+        "message": "Ingresa minutos, con decimales como fracción de minuto (2,5 = 2 min 30 s), o segundos con una s (30s, 30 seg)",
+        "description": "Ayuda del campo de tiempo"
+    },
+    "startButton": {
+        "message": "Iniciar temporizador",
+        "description": "Botón para iniciar"
+    },
+    "pauseButton": {
+        "message": "Pausar",
+        "description": "Botón para pausar"
+    },
+    "resumeButton": {
+        "message": "Reanudar",
+        "description": "Botón para reanudar"
+    },
+    "resetButton": {
+        "message": "Detener",
+        "description": "Botón para detener y borrar el temporizador"
+    },
+    "logoLinkTitle": {
+        "message": "Ver el sitio de Simple Timer. Extensión para limitar tus bloques de trabajo, creada por Sebastián Sanhueza Tapia",
+        "description": "Ayuda del logo que abre la web"
+    },
+    "logoAlt": {
+        "message": "icono de la extensión Simple Timer",
+        "description": "Texto alternativo del logo"
+    },
+
+    "timerFinishedTitle": {
+        "message": "¡Tiempo terminado!",
+        "description": "Título de la notificación al terminar un temporizador"
+    },
+    "timerFinishedMessage": {
+        "message": "Tu temporizador de $TIME$ ha finalizado.",
+        "description": "Cuerpo de la notificación. $TIME$ es la duración, por ejemplo '2 minutos y 30 segundos'",
+        "placeholders": {
+            "time": { "content": "$1", "example": "2 minutos y 30 segundos" }
+        }
+    },
+    "timerFinishedMessageNoTime": {
+        "message": "Tu temporizador ha finalizado.",
+        "description": "Cuerpo de la notificación cuando no se conoce la duración"
+    },
+    "durationSecond": {
+        "message": "$COUNT$ segundo",
+        "placeholders": { "count": { "content": "$1", "example": "1" } }
+    },
+    "durationSeconds": {
+        "message": "$COUNT$ segundos",
+        "placeholders": { "count": { "content": "$1", "example": "30" } }
+    },
+    "durationMinute": {
+        "message": "$COUNT$ minuto",
+        "placeholders": { "count": { "content": "$1", "example": "1" } }
+    },
+    "durationMinutes": {
+        "message": "$COUNT$ minutos",
+        "placeholders": { "count": { "content": "$1", "example": "25" } }
+    },
+    "durationMinutesAndSeconds": {
+        "message": "$MINUTES$ y $SECONDS$",
+        "description": "Une los minutos y los segundos de una duración",
+        "placeholders": {
+            "minutes": { "content": "$1", "example": "2 minutos" },
+            "seconds": { "content": "$2", "example": "30 segundos" }
+        }
+    },
+
+    "reviewButtonLeave": {
+        "message": "Dejar reseña",
+        "description": "Botón de la petición de reseña que abre la Chrome Web Store"
+    },
+    "reviewButtonLater": {
+        "message": "Ahora no",
+        "description": "Botón de la petición de reseña que la cierra"
+    },
+    "reviewTitle1": { "message": "¿Te está sirviendo Simple Timer?" },
+    "reviewMessage1": { "message": "Déjanos una reseña en la Chrome Web Store." },
+    "reviewTitle2": { "message": "¿Te gusta Simple Timer?" },
+    "reviewMessage2": { "message": "Déjanos tu reseña, nos ayuda a seguir mejorando." },
+    "reviewTitle3": { "message": "Cuéntale a los demás sobre Simple Timer" },
+    "reviewMessage3": { "message": "Tu reseña ayuda a que otras personas lo encuentren." },
+    "reviewTitle4": { "message": "Cuéntanos cuánto te gusta Simple Timer" },
+    "reviewMessage4": { "message": "Déjanos una reseña en la Chrome Web Store." },
+    "reviewTitle5": { "message": "¿Qué te parece Simple Timer?" },
+    "reviewMessage5": { "message": "Tu opinión nos importa, déjanos una reseña." },
+    "reviewTitle6": { "message": "¿Simple Timer te ayuda con tu tiempo?" },
+    "reviewMessage6": { "message": "Cuéntalo en una reseña en la Chrome Web Store." },
+    "reviewTitle7": { "message": "Ayúdanos a crecer" },
+    "reviewMessage7": { "message": "Una reseña de Simple Timer marca la diferencia." },
+    "reviewTitle8": { "message": "¿Simple Timer te ha sido útil?" },
+    "reviewMessage8": { "message": "Compártelo con una reseña en la Chrome Web Store." },
+    "reviewTitle9": { "message": "Tu opinión cuenta" },
+    "reviewMessage9": { "message": "Déjale una reseña a Simple Timer, solo toma un minuto." },
+    "reviewTitle10": { "message": "¿Recomendarías Simple Timer?" },
+    "reviewMessage10": { "message": "Déjanos una reseña y cuéntale a otros." }
+}
