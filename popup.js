@@ -20,56 +20,39 @@ const iconoTimerContainer = document.querySelector(".iconoTimerContainer");
 let timerInterval = null;
 
 /**
- * Convierte un valor de entrada con decimales a milisegundos totales
- * @param {string} inputValue - Valor ingresado por el usuario (ej: "1,30", "0,2", "2,9")
- * @returns {number} Milisegundos totales
+ * Convierte el valor ingresado por el usuario a milisegundos totales.
+ *
+ * Acepta dos formatos:
+ * - Minutos, con hasta 2 decimales que son fracción de minuto (coma o punto):
+ *   "2" = 2:00, "2,5" = 2:30, "0,1" = 6 s, ",5" = 30 s, "0,75" = 45 s
+ * - Segundos, con un sufijo (s, seg, segs, segundo, segundos), con o sin espacio:
+ *   "10s" = 10 s, "30 seg" = 30 s, "90 segundos" = 1:30
+ *
+ * El resultado se redondea al segundo más cercano.
+ * @param {string} inputValue - Valor ingresado por el usuario
+ * @returns {number} Milisegundos totales, o 0 si el valor no es válido
  */
 function parseTimeInput(inputValue) {
-    if (!inputValue || inputValue.trim() === "") {
+    if (!inputValue) {
         return 0;
     }
 
-    // Reemplazar coma por punto para manejo consistente
-    const normalizedValue = inputValue.replace(",", ".");
+    const value = inputValue.trim().toLowerCase();
 
-    // Validar formato: número con máximo 2 decimales, incluyendo casos que empiecen con punto
-    // Acepta: "1.5", "0.3", ".3", "1", "0", etc.
-    const regex = /^(?:(\d+)(?:\.(\d{1,2}))?|\.(\d{1,2}))$/;
-    const match = normalizedValue.match(regex);
+    // Segundos explícitos: "10s", "10 seg", "10 segundos"
+    const secondsMatch = value.match(/^(\d+)\s*(?:s|segs?|segundos?)$/);
+    if (secondsMatch) {
+        return parseInt(secondsMatch[1], 10) * 1000;
+    }
 
-    if (!match) {
+    // Minutos con decimales opcionales: "2", "2,5", ",5", "2,"
+    const normalizedValue = value.replace(",", ".");
+    if (!/^(?=.*\d)\d*(?:\.\d{0,2})?$/.test(normalizedValue)) {
         return 0;
     }
 
-    let wholePart, decimalPart;
-
-    if (match[1] !== undefined) {
-        // Caso normal: "1.5", "0.3", "1", etc.
-        wholePart = parseInt(match[1], 10);
-        decimalPart = match[2] ? match[2] : "0";
-    } else {
-        // Caso que empieza con punto: ".3", ".45", etc.
-        wholePart = 0;
-        decimalPart = match[3] ? match[3] : "0";
-    }
-
-    // Truncar a máximo 2 decimales
-    const truncatedDecimal =
-        decimalPart.length > 2 ? decimalPart.substring(0, 2) : decimalPart;
-    const decimalValue = parseFloat("0." + truncatedDecimal);
-
-    // Aplicar la lógica de conversión
-    let totalSeconds;
-
-    if (decimalValue <= 0.6) {
-        // Escala de 60: 0.1 = 6 segundos, 0.5 = 30 segundos, 0.6 = 36 segundos
-        totalSeconds = wholePart * 60 + Math.round(decimalValue * 100);
-    } else {
-        // Escala de segundos: 0.7 = 42 segundos, 0.8 = 48 segundos, 0.9 = 54 segundos
-        totalSeconds = wholePart * 60 + Math.round(decimalValue * 60);
-    }
-
-    return totalSeconds * 1000; // Convertir a milisegundos
+    const totalSeconds = Math.round(parseFloat(normalizedValue) * 60);
+    return totalSeconds * 1000;
 }
 
 /**
@@ -125,8 +108,8 @@ function TimerController(id) {
     this.timeInput.addEventListener("input", (e) => {
         let value = e.target.value;
 
-        // Permitir solo números, comas y puntos
-        value = value.replace(/[^0-9,\.]/g, "");
+        // Permitir solo números, comas, puntos, espacios y letras (para "10 seg")
+        value = value.replace(/[^0-9,.\sa-z]/gi, "");
 
         // Asegurar que solo haya una coma o punto
         const commaIndex = value.indexOf(",");
@@ -146,11 +129,7 @@ function TimerController(id) {
         }
 
         // Limitar a 2 decimales
-        const parts = value.split(/[,\.]/);
-        if (parts.length > 1 && parts[1].length > 2) {
-            parts[1] = parts[1].substring(0, 2);
-            value = parts.join(",");
-        }
+        value = value.replace(/([,.]\d{2})\d+/, "$1");
 
         e.target.value = value;
         chrome.storage.local.set({ [`timerInputValue-${id}`]: value });

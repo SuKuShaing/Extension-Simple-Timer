@@ -44,14 +44,14 @@ Chrome puede terminar el service worker en cualquier momento, y esto condiciona 
 
 ### Entrada de tiempo
 
-`parseTimeInput` (`popup.js`) interpreta el formato `min,seg` (acepta coma o punto, máximo 2 decimales) y tiene dos escalas:
+`parseTimeInput` (`popup.js`) acepta dos formatos y redondea al segundo:
 
-| Decimal | Regla | Ejemplos |
+| Formato | Regla | Ejemplos |
 | --- | --- | --- |
-| `<= 0.6` | Los dígitos son segundos, sobre 100 | `1,30` = 1:30, `0,5` = 50 s, `0,05` = 5 s |
-| `> 0.6` | Fracción de minuto | `0,7` = 42 s, `0,75` = 45 s |
+| Minutos | Coma o punto, máximo 2 decimales. El decimal es fracción de minuto | `2,5` = 2:30, `0,1` = 6 s, `,75` = 45 s, `1,30` = 1:18 |
+| Segundos | Entero con sufijo `s`, `seg`, `segs`, `segundo` o `segundos`, con o sin espacio, sin distinguir mayúsculas | `10s`, `30 seg`, `90 segundos` = 1:30 |
 
-Los comentarios dentro de esa función no coinciden con este comportamiento (dicen que `0.1` son 6 s, pero el código da 10 s); la tabla refleja lo que hace el código.
+Cualquier otro valor devuelve 0 y no inicia el temporizador. El listener `input` del campo deja pasar letras y espacios para el formato de segundos.
 
 ## Restricciones y puntos a cuidar
 

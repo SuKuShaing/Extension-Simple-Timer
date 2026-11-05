@@ -16,11 +16,6 @@ Imagen de la nueva versión de la interfaz de la extensión:
 
 ## To Do
 
--   [ ] Bug: la entrada de tiempo cambia de escala y no coincide con sus comentarios (`parseTimeInput` en `popup.js`)
-    -   Hasta `0,6` los dígitos cuentan como segundos sobre 100: `0,1` = 10 s, `0,5` = 50 s, `0,6` = 60 s. Los comentarios dicen 6 s, 30 s y 36 s
-    -   Desde ahí los decimales cuentan como fracción de minuto: `0,61` = 37 s, `0,7` = 42 s, `0,75` = 45 s
-    -   Efecto: un valor mayor puede dar menos tiempo, por ejemplo `0,6` = 60 s pero `0,7` = 42 s, y `1,59` = 1:59 pero `1,61` = 1:37
-    -   Falta decidir cómo debe funcionar la entrada (solo segundos o solo fracción de minuto, y qué hacer con valores sobre 59) y luego corregir el código y los comentarios
 -   [ ] Bug posible: `start_timer`, `pause_timer`, `resume_timer` y `reset_timer` no esperan a `stateRestored` (listener de mensajes en `background.js`)
     -   Si uno de estos mensajes despierta al service worker, se ejecuta antes de que termine la restauración del estado. Hoy solo `get_timer_status` y el listener de alarmas la esperan
     -   Efecto: la restauración podría sobrescribir un temporizador recién iniciado, o una pausa podría no hacer nada porque el temporizador aún no está cargado
@@ -31,6 +26,8 @@ Imagen de la nueva versión de la interfaz de la extensión:
 -   [ ] una web landing donde se muestre el producto
 -   [ ] una página dentro de la web que sea el gracias
 -   [ ] Ver sí el badge puede cambiar según el tono de colores del navegador
+-   [x] Bug: la entrada de tiempo cambiaba de escala (`0,6` = 60 s pero `0,7` = 42 s). Ahora los decimales siempre son fracción de minuto (`0,1` = 6 s, `2,5` = 2:30)
+-   [x] Que se puedan ingresar segundos con un sufijo: `10s`, `10seg`, `10 segundos`, etc.
 -   [x] Bug: la alarma `badge-update` corría cada ~1 segundo en vez de cada minuto, ahora despierta al service worker solo cuando cambia el minuto y no corre mientras el temporizador está pausado
 -   [x] Se añade una transición a la aparición y desaparición de las líneas diagonales que visualizan el tiempo corriendo
 -   [x] Colocarle borde al logo de la extensión cosa de que sea más visible en temas claros
