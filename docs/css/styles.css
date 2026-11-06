@@ -366,6 +366,22 @@ kbd {
 	mask-image: radial-gradient(ellipse 70% 60% at 75% 40%, #000 20%, transparent 75%);
 	-webkit-mask-image: radial-gradient(ellipse 70% 60% at 75% 40%, #000 20%, transparent 75%);
 	pointer-events: none;
+	animation: mover-rayas-hero 4s linear infinite;
+}
+
+/* demo.js agrega la clase mientras algún temporizador de la demo corre */
+.hero.temporizador-corriendo::before {
+	animation-play-state: paused;
+}
+
+@keyframes mover-rayas-hero {
+	from {
+		background-position: 0 0;
+	}
+	to {
+		/* Un periodo de las rayas (28px) medido en horizontal: 28px / cos(45°) */
+		background-position: calc(-28px * 1.41421356) 0;
+	}
 }
 
 .hero .container {

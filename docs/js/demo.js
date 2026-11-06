@@ -150,6 +150,7 @@
 		this.popup = popup;
 		this.badge = navegador ? navegador.querySelector("[data-demo-badge]") : null;
 		this.icono = navegador ? navegador.querySelector("[data-demo-icono]") : null;
+		this.hero = popup.closest(".hero");
 		this.timers = [];
 		this.intervalo = null;
 
@@ -349,6 +350,8 @@
 
 		const algunoCorre = activos.some((a) => !a.pausado);
 		this.popup.classList.toggle("con-temporizadores", activos.length > 0);
+		// Detiene las rayas del fondo del hero mientras algún temporizador corre
+		if (this.hero) this.hero.classList.toggle("temporizador-corriendo", algunoCorre);
 
 		if (this.icono) this.icono.src = algunoCorre ? ICONO_ACTIVO : ICONO;
 
